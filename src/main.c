@@ -45,7 +45,7 @@ const char* password =  "perenpatser";
 
 
 // MQTT
-const char* broker_uri = "mqtt://duijsens.dev";
+const char* broker_uri = "mqtt://192.168.56.1";
 esp_mqtt_client_handle_t mqtt_client;
 
 // Flags
