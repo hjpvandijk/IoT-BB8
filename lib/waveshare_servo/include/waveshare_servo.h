@@ -74,23 +74,23 @@
 // UART parameters
 #define SERVO_UART_TIMEOUT_ms 100
 
-struct servo_state_t
+typedef struct 
 {
   uint16_t position;
   uint16_t speed;
   uint16_t load;
   uint8_t voltage_V;
   uint16_t current_mA;
-};
+} servo_state_t;
 
-struct servo_handle_t
+typedef struct 
 {
   uart_port_t uart;
   uint8_t servo_id;
   struct servo_state_t state;
-};
+} servo_handle_t;
 
-enum servo_result_t
+typedef enum 
 {
   SERVO_OK = 0x00,
   SERVO_INVALID_CHECKSUM,
@@ -98,7 +98,7 @@ enum servo_result_t
   SERVO_HAL_ERR,
   SERVO_RX_TIMEOUT,
   SERVO_TX_TIMOUT,
-};
+} servo_result_t;
 
 // Helper functions
 

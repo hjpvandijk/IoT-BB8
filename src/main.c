@@ -128,175 +128,175 @@ void app_main() {
 
 
 
-    // pwm_configure_motors();
+    pwm_configure_motors();
 
-    // connection_event_group = xEventGroupCreate();
+    connection_event_group = xEventGroupCreate();
 
-    // init_wifi(&connection_event_group, ssid, password);
-    // init_mqtt(&connection_event_group, &mqtt_client, broker_uri);
+    init_wifi(&connection_event_group, ssid, password);
+    init_mqtt(&connection_event_group, &mqtt_client, broker_uri);
 
-    // xTaskCreate(imu_task, "imu_task", 4096, &imu_data, 10, NULL);
-    // xTaskCreate(report_state_task, "state_task", 4096, &mqtt_client, 10, NULL);
-    // xTaskCreate(test_connection_task, "test_connection_task", 4096, NULL, 10, NULL);
+    xTaskCreate(imu_task, "imu_task", 4096, &imu_data, 10, NULL);
+    xTaskCreate(report_state_task, "state_task", 4096, &mqtt_client, 10, NULL);
+    xTaskCreate(test_connection_task, "test_connection_task", 4096, NULL, 10, NULL);
 
-    // TickType_t last_wakeup_time = xTaskGetTickCount(); 
-    // TickType_t last_turn_pulse = xTaskGetTickCount(); 
+    TickType_t last_wakeup_time = xTaskGetTickCount(); 
+    TickType_t last_turn_pulse = xTaskGetTickCount(); 
 
-    // vector_t current_compensated_va = imu_data.compensated_va;
-    // vector_t last_compensated_va = imu_data.compensated_va;
-    // vector_t last_velocity = {0.0f, 0.0f, 0.0f};
+    vector_t current_compensated_va = imu_data.compensated_va;
+    vector_t last_compensated_va = imu_data.compensated_va;
+    vector_t last_velocity = {0.0f, 0.0f, 0.0f};
 
-    // float x_array[arraysize];
-    // float y_array[arraysize];
-    // float z_array[arraysize];
-    // int array_index = 0;
+    float x_array[arraysize];
+    float y_array[arraysize];
+    float z_array[arraysize];
+    int array_index = 0;
 
-    // int tick_counter = 0;
+    int tick_counter = 0;
 
-    // bool xy_set = false;
-    // float x = 0.0f;
-    // float y = 0.0f;
+    bool xy_set = false;
+    float x = 0.0f;
+    float y = 0.0f;
 
     
 
-    // // Main action loop starts here
-    // float tot_disp = 0.0f;
-    // float tot_disp_estimate = 0.0f;
-    // float raw_displacements_until_standing_still = 0.0f;
-    // while (1) {        
-    //     // Get current state and target
-    //     // State current_state = get_current_state();
-    //     // Target target = get_target();
+    // Main action loop starts here
+    float tot_disp = 0.0f;
+    float tot_disp_estimate = 0.0f;
+    float raw_displacements_until_standing_still = 0.0f;
+    while (1) {        
+        // Get current state and target
+        // State current_state = get_current_state();
+        // Target target = get_target();
 
-    //     // Process the objective to determine the next action
-    //     process_objective(get_current_state(), get_target());
+        // Process the objective to determine the next action
+        process_objective(get_current_state(), get_target());
 
-    //     // Process the action to determine the next state
-    //     process_action(get_current_state(), get_target(), &last_turn_pulse);
+        // Process the action to determine the next state
+        process_action(get_current_state(), get_target(), &last_turn_pulse);
 
-    //     // Update the current state after processing the objective and action
-    //     if (current_state.objective != OBJECTIVE_INIT) {
-    //         if(!xy_set){
-    //             x = get_current_x_pos();
-    //             y = get_current_y_pos();
-    //             xy_set = true;
-    //         }
+        // Update the current state after processing the objective and action
+        if (current_state.objective != OBJECTIVE_INIT) {
+            if(!xy_set){
+                x = get_current_x_pos();
+                y = get_current_y_pos();
+                xy_set = true;
+            }
 
-    //         // set_current_coordinates(new_x, new_y);
-    //         float rotation = imu_data.heading ;//- ticks*YAW_DRIFT_PER_TICK;
-    //         // if(rotation < 0.0f) rotation = rotation + 360.0f;
-    //         // if(rotation > 360.0f) rotation = rotation - 360.0f;
-    //         set_current_rotation(rotation);
-    //         set_current_pitch(imu_data.pitch);
-    //         set_current_roll(imu_data.roll);
+            // set_current_coordinates(new_x, new_y);
+            float rotation = imu_data.heading ;//- ticks*YAW_DRIFT_PER_TICK;
+            // if(rotation < 0.0f) rotation = rotation + 360.0f;
+            // if(rotation > 360.0f) rotation = rotation - 360.0f;
+            set_current_rotation(rotation);
+            set_current_pitch(imu_data.pitch);
+            set_current_roll(imu_data.roll);
 
-    //         // Get the compensated acceleration from the IMU
-    //         last_compensated_va = current_compensated_va;
-    //         vector_t current_compensated_va = imu_data.compensated_va;
-    //         float displacement = 0.0f;
-    //         float total_displacement_estimate = 0.0f;
+            // Get the compensated acceleration from the IMU
+            last_compensated_va = current_compensated_va;
+            vector_t current_compensated_va = imu_data.compensated_va;
+            float displacement = 0.0f;
+            float total_displacement_estimate = 0.0f;
             
-    //         if(imu_data.compensated_va.x + imu_data.compensated_va.y + imu_data.compensated_va.z > 0.2 || imu_data.compensated_va.x + imu_data.compensated_va.y + imu_data.compensated_va.z < -0.2){
+            if(imu_data.compensated_va.x + imu_data.compensated_va.y + imu_data.compensated_va.z > 0.2 || imu_data.compensated_va.x + imu_data.compensated_va.y + imu_data.compensated_va.z < -0.2){
             
-    //             // Calculate the velocity integrals
-    //             float velocity_x = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_compensated_va.x*9.81f, current_compensated_va.x*9.81f);
-    //             float velocity_y = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_compensated_va.y*9.81f, current_compensated_va.y*9.81f);
-    //             float velocity_z = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_compensated_va.z*9.81f, current_compensated_va.z*9.81f);
+                // Calculate the velocity integrals
+                float velocity_x = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_compensated_va.x*9.81f, current_compensated_va.x*9.81f);
+                float velocity_y = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_compensated_va.y*9.81f, current_compensated_va.y*9.81f);
+                float velocity_z = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_compensated_va.z*9.81f, current_compensated_va.z*9.81f);
 
-    //             // Calculate the displacement integrals
-    //             float displacement_x = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_velocity.x, velocity_x);
-    //             float displacement_y = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_velocity.y, velocity_y);
-    //             float displacement_z = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_velocity.z, velocity_z);
+                // Calculate the displacement integrals
+                float displacement_x = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_velocity.x, velocity_x);
+                float displacement_y = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_velocity.y, velocity_y);
+                float displacement_z = integrate((float)xTaskGetTickCount(), (float)xTaskGetTickCount()+(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS), last_velocity.z, velocity_z);
 
-    //             // Update last velocity
-    //             last_velocity.x = velocity_x;
-    //             last_velocity.y = velocity_y;
-    //             last_velocity.z = velocity_z;
+                // Update last velocity
+                last_velocity.x = velocity_x;
+                last_velocity.y = velocity_y;
+                last_velocity.z = velocity_z;
 
-    //             // Calculate new coordinates based on current yaw and displacement
-    //             displacement = sqrt(pow(displacement_x, 2) + pow(displacement_y, 2) + pow(displacement_z, 2))*100;
-    //             // total_displacement = (total_displacement - 111.88) / 9.58;
-    //             total_displacement_estimate = powf((20.0f*displacement + 224.41)/108.44, 2.0f)/20.0f;
-    //         }
-    //         float current_rotation = get_current_rotation();
-    //         if(get_current_action() == ACTION_BACKWARD || get_current_action() == ACTION_FORWARD || get_current_action() == ACTION_STOP){
-    //             tot_disp_estimate = tot_disp_estimate + total_displacement_estimate;
-    //             raw_displacements_until_standing_still = raw_displacements_until_standing_still + displacement;
+                // Calculate new coordinates based on current yaw and displacement
+                displacement = sqrt(pow(displacement_x, 2) + pow(displacement_y, 2) + pow(displacement_z, 2))*100;
+                // total_displacement = (total_displacement - 111.88) / 9.58;
+                total_displacement_estimate = powf((20.0f*displacement + 224.41)/108.44, 2.0f)/20.0f;
+            }
+            float current_rotation = get_current_rotation();
+            if(get_current_action() == ACTION_BACKWARD || get_current_action() == ACTION_FORWARD || get_current_action() == ACTION_STOP){
+                tot_disp_estimate = tot_disp_estimate + total_displacement_estimate;
+                raw_displacements_until_standing_still = raw_displacements_until_standing_still + displacement;
              
-    //             // printf("Total displacement: %d\n", tot_disp);
+                // printf("Total displacement: %d\n", tot_disp);
 
-    //             set_total_displacement(tot_disp_estimate);
+                set_total_displacement(tot_disp_estimate);
 
-    //             // printf("Current rotation: %f\n", current_rotation);
-    //             // printf("Current coordinates: X: %f, Y: %f\n", get_current_x_pos(), get_current_y_pos());
-    //             // // printf("RAD: %f\n", DEG2RAD(90.0f-current_rotation));
-    //             // printf("cos: %f, sin: %f\n", cos(degrees_to_radians(90.0f-current_rotation)), sin(degrees_to_radians(90.0f-current_rotation)));
-    //             // // printf("cos: %f, sin: %f\n", cos((90.0f-current_rotation)*(M_PI/180.0f)), sin((90.0f-current_rotation)*(M_PI/180.0f)));
+                // printf("Current rotation: %f\n", current_rotation);
+                // printf("Current coordinates: X: %f, Y: %f\n", get_current_x_pos(), get_current_y_pos());
+                // // printf("RAD: %f\n", DEG2RAD(90.0f-current_rotation));
+                // printf("cos: %f, sin: %f\n", cos(degrees_to_radians(90.0f-current_rotation)), sin(degrees_to_radians(90.0f-current_rotation)));
+                // // printf("cos: %f, sin: %f\n", cos((90.0f-current_rotation)*(M_PI/180.0f)), sin((90.0f-current_rotation)*(M_PI/180.0f)));
 
-    //             float new_x_pos = get_current_x_pos() + total_displacement_estimate * cos(degrees_to_radians(90.0f-current_rotation));
-    //             float new_y_pos = get_current_y_pos() + total_displacement_estimate * sin(degrees_to_radians(90.0f-current_rotation));
-    //             // printf("New coordinates: X: %f, Y: %f\n", new_x_pos, new_y_pos);
+                float new_x_pos = get_current_x_pos() + total_displacement_estimate * cos(degrees_to_radians(90.0f-current_rotation));
+                float new_y_pos = get_current_y_pos() + total_displacement_estimate * sin(degrees_to_radians(90.0f-current_rotation));
+                // printf("New coordinates: X: %f, Y: %f\n", new_x_pos, new_y_pos);
 
-    //             // Update the current coordinates
-    //             set_current_coordinates(new_x_pos, new_y_pos);
-    //         } 
-    //         // else if(get_current_action() == ACTION_NONE && raw_displacements_until_standing_still >0.0f){
-    //         //         printf("GOT HERE\n");
-    //         //         float tot_disp_diff = powf((raw_displacements_until_standing_still + 224.41)/108.44, 2.0f);
-    //         //         tot_disp = tot_disp + tot_disp_diff;
-    //         //         tot_disp_estimate = tot_disp;
-    //         //         set_total_displacement(tot_disp);
+                // Update the current coordinates
+                set_current_coordinates(new_x_pos, new_y_pos);
+            } 
+            // else if(get_current_action() == ACTION_NONE && raw_displacements_until_standing_still >0.0f){
+            //         printf("GOT HERE\n");
+            //         float tot_disp_diff = powf((raw_displacements_until_standing_still + 224.41)/108.44, 2.0f);
+            //         tot_disp = tot_disp + tot_disp_diff;
+            //         tot_disp_estimate = tot_disp;
+            //         set_total_displacement(tot_disp);
 
-    //         //         float angle_from_last_pos = atan2(get_current_y_pos()-y, get_current_x_pos()-x);
-    //         //         float new_x_pos = x + tot_disp_diff * cos(angle_from_last_pos);
-    //         //         float new_y_pos = y + tot_disp_diff * sin(angle_from_last_pos);
+            //         float angle_from_last_pos = atan2(get_current_y_pos()-y, get_current_x_pos()-x);
+            //         float new_x_pos = x + tot_disp_diff * cos(angle_from_last_pos);
+            //         float new_y_pos = y + tot_disp_diff * sin(angle_from_last_pos);
                     
-    //         //         // Update the current coordinates
-    //         //         set_current_coordinates(new_x_pos, new_y_pos);
-    //         //         x = new_x_pos;
-    //         //         y = new_y_pos;
-    //         //         raw_displacements_until_standing_still = 0.0f;
+            //         // Update the current coordinates
+            //         set_current_coordinates(new_x_pos, new_y_pos);
+            //         x = new_x_pos;
+            //         y = new_y_pos;
+            //         raw_displacements_until_standing_still = 0.0f;
 
-    //         // }
+            // }
 
-    //         // Debug output
-    //         // printf("Current coordinates: X: %f, Y: %f\n", get_current_x_pos(), get_current_y_pos());
-    //         // printf("Total displacement: %f\n", total_displacement);
-    //         // if (current_compensated_va.x + current_compensated_va.y + current_compensated_va.z > 0.2 || current_compensated_va.x + current_compensated_va.y + current_compensated_va.z < -0.2){
-    //         //     printf("Compensated acceleration: X: %f, Y: %f, Z: %f\n", current_compensated_va.x, current_compensated_va.y, current_compensated_va.z);
-    //         // }
-    //         // if(imu_data.accelx + imu_data.accely + imu_data.accelz > 1.2){
-    //         //     printf("Not compensated acceleration: X: %f, Y: %f, Z: %f\n", imu_data.accelx, imu_data.accely, imu_data.accelz);
-    //         // }
-    //         // x_array[array_index] = imu_data.accelx;
-    //         // y_array[array_index] = imu_data.accely;
-    //         // z_array[array_index] = imu_data.accelz;
+            // Debug output
+            // printf("Current coordinates: X: %f, Y: %f\n", get_current_x_pos(), get_current_y_pos());
+            // printf("Total displacement: %f\n", total_displacement);
+            // if (current_compensated_va.x + current_compensated_va.y + current_compensated_va.z > 0.2 || current_compensated_va.x + current_compensated_va.y + current_compensated_va.z < -0.2){
+            //     printf("Compensated acceleration: X: %f, Y: %f, Z: %f\n", current_compensated_va.x, current_compensated_va.y, current_compensated_va.z);
+            // }
+            // if(imu_data.accelx + imu_data.accely + imu_data.accelz > 1.2){
+            //     printf("Not compensated acceleration: X: %f, Y: %f, Z: %f\n", imu_data.accelx, imu_data.accely, imu_data.accelz);
+            // }
+            // x_array[array_index] = imu_data.accelx;
+            // y_array[array_index] = imu_data.accely;
+            // z_array[array_index] = imu_data.accelz;
 
-    //         // array_index = array_index+1;
-    //         // if (array_index >= arraysize) {
-    //         //     printf("AVG: X: %f, Y: %f, Z: %f ; SD: X: %f, Y: %f, Z: %f\n", get_average(x_array), get_average(y_array), get_average(z_array), get_standard_deviation(x_array), get_standard_deviation(y_array), get_standard_deviation(z_array));
-    //         //     array_index = 0;
-    //         // }
+            // array_index = array_index+1;
+            // if (array_index >= arraysize) {
+            //     printf("AVG: X: %f, Y: %f, Z: %f ; SD: X: %f, Y: %f, Z: %f\n", get_average(x_array), get_average(y_array), get_average(z_array), get_standard_deviation(x_array), get_standard_deviation(y_array), get_standard_deviation(z_array));
+            //     array_index = 0;
+            // }
 
-    //         // if (velocity_x + velocity_y + velocity_z > 0.1){
-    //         //     printf("Velocity: X: %f, Y: %f, Z: %f\n", velocity_x, velocity_y, velocity_z);
-    //         // }
+            // if (velocity_x + velocity_y + velocity_z > 0.1){
+            //     printf("Velocity: X: %f, Y: %f, Z: %f\n", velocity_x, velocity_y, velocity_z);
+            // }
 
-    //         TickType_t current_time = xTaskGetTickCount();
-    //         float elapsed_time = (current_time - last_wakeup_time) * portTICK_PERIOD_MS / 1000.0;
+            TickType_t current_time = xTaskGetTickCount();
+            float elapsed_time = (current_time - last_wakeup_time) * portTICK_PERIOD_MS / 1000.0;
 
-    //         // TODO: Improve debug output, 
-    //         if (elapsed_time >= 1.0) {
-    //             if (DEBUG) {
-    //                 printf("Yaw: %f, X: %f, Y: %f\n", get_current_rotation(), get_current_x_pos(), get_current_x_pos());
-    //             }
-    //             last_wakeup_time = current_time; 
-    //         }
-    //     }
+            // TODO: Improve debug output, 
+            if (elapsed_time >= 1.0) {
+                if (DEBUG) {
+                    printf("Yaw: %f, X: %f, Y: %f\n", get_current_rotation(), get_current_x_pos(), get_current_x_pos());
+                }
+                last_wakeup_time = current_time; 
+            }
+        }
 
 
-    //     // Wait for the next decision interval
-    //     vTaskDelay(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS);
-    // }
+        // Wait for the next decision interval
+        vTaskDelay(DECISION_INTERVAL_TIME_MS / portTICK_PERIOD_MS);
+    }
 
 }

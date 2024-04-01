@@ -1,24 +1,25 @@
 #pragma once
 
 #include <driver/gpio.h>
-#include "driver/mcpwm.h"
-#include "soc/mcpwm_periph.h"
+#include "waveshare_servo.h"
 #include "motor_action_data.h"
 
+servo_state_t servo_state;
+servo_handle_t servo = {UART_NUM_2, 1, servo_state};
+
 // Define motor pins
-#define MOTORA_PINA GPIO_NUM_1
-#define MOTORA_PINB GPIO_NUM_2
-#define MOTORB_PINA GPIO_NUM_3
-#define MOTORB_PINB GPIO_NUM_4
+#define SERVO_GPIO GPIO_NUM_15 //?
+
+
 
 #define MOTOR_LEFT 1
 #define MOTOR_RIGHT 2
 #define MOTOR_ALL -1
 
-void pwm_motor_forward(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num , float duty_cycle);
-void pwm_motor_backward(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num , float duty_cycle);
-void pwm_motor_stop(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num);
-void pwm_forward_action(motor_action_data_t motor_action_data);
-void pwm_backward_action(motor_action_data_t motor_action_data);
-void pwm_stop_action(motor_action_data_t motor_action_data);
-void pwm_configure_motors(void);
+// void drive_servo_forward(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num , float duty_cycle);
+// void drive_servo_backward(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num , float duty_cycle);
+// void drive_servo_stop(mcpwm_unit_t mcpwm_num, mcpwm_timer_t timer_num);
+// void drive_servo_forward_action(motor_action_data_t motor_action_data);
+// void drive_servo_backward_action(motor_action_data_t motor_action_data);
+// void drive_servo_stop_action(motor_action_data_t motor_action_data);
+// void drive_servo_configure(void);
