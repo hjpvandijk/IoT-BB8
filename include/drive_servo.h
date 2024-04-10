@@ -1,10 +1,15 @@
 #pragma once
 
+#ifndef _DRIVE_SERVO_H
+#define _DRIVE_SERVO_H
+
 #include <driver/gpio.h>
 #include "waveshare_servo.h"
 
+
+
 servo_state_t servo_state; // Initialize all members to zero
-servo_handle_t servo;
+servo_handle_t drive_servo;
 
 // Define motor pins
 #define SERVO_GPIO GPIO_NUM_15 //?
@@ -22,3 +27,5 @@ void drive_servo_forward_action(uint16_t speed);
 void drive_servo_backward_action(uint16_t speed);
 void drive_servo_stop_action();
 void drive_servo_configure(void);
+
+#endif // _DRIVE_SERVO_H

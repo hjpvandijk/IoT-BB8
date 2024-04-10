@@ -56,13 +56,13 @@ void init_servo(servo_t* servo, int gpio, int min_angle, int mid_angle, int max_
         .period_ticks = SERVO_TIMEBASE_PERIOD,
         .count_mode = MCPWM_TIMER_COUNT_MODE_UP
     };
-    ESP_ERROR_CHECK(mcpwm_new_timer(&timer_config, servo->timer));
+    ESP_ERROR_CHECK(mcpwm_new_timer(&timer_config, &servo->timer));
 
     servo->oper = NULL;
     mcpwm_operator_config_t operator_config = {
         .group_id = 0 // operator must be in the same group as the timer
     };
-    ESP_ERROR_CHECK(mcpwm_new_operator(&operator_config, servo->oper));
+    ESP_ERROR_CHECK(mcpwm_new_operator(&operator_config, &servo->oper));
 
     ESP_LOGI(TAG, "Connect timer and operator");
     ESP_ERROR_CHECK(mcpwm_operator_connect_timer(servo->oper, servo->timer));
@@ -72,13 +72,13 @@ void init_servo(servo_t* servo, int gpio, int min_angle, int mid_angle, int max_
     mcpwm_comparator_config_t comparator_config = {
         .flags.update_cmp_on_tez = true,
     };
-    ESP_ERROR_CHECK(mcpwm_new_comparator(servo->oper, &comparator_config, servo->comparator));
+    ESP_ERROR_CHECK(mcpwm_new_comparator(servo->oper, &comparator_config, &servo->comparator));
 
     servo->generator = NULL;
     mcpwm_generator_config_t generator_config = {
         .gen_gpio_num = servo->gpio,
     };
-    ESP_ERROR_CHECK(mcpwm_new_generator(servo->oper, &generator_config, servo->generator));
+    ESP_ERROR_CHECK(mcpwm_new_generator(servo->oper, &generator_config, &servo->generator));
 
     // set the initial compare value, so that the servo will spin to the center position
     ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(servo->comparator, example_angle_to_compare(0)));

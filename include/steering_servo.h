@@ -1,6 +1,9 @@
 #include "servo_pwm.h"
 #include <driver/gpio.h>
 
+#ifndef _STEERING_SERVO_H
+#define _STEERING_SERVO_H
+
 #define STEERING_SERVO_PIN GPIO_NUM_43 //D6
 
 
@@ -17,8 +20,10 @@ typedef enum {
     RIGHT = FULL_RIGHT,
 } SteeringPosition;
 
-SteeringPosition target_position = MID;
+int steering_target_position = MID;
 
 void steering_servo_init(void);
 void steering_servo_set_position(SteeringPosition position);
 void steering_servo_task(void *args);
+
+#endif // _STEERING_SERVO_H

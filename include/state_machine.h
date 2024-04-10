@@ -34,8 +34,8 @@ typedef struct {
     float rotation;
     float pitch;
     float roll;
-    float speed;
-    float speed;
+    uint16_t speed;
+    float real_speed;
     float acceleration;
     float total_displacement;
     int action;

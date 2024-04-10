@@ -2,6 +2,8 @@
 
 #include <stdbool.h>
 #include <ctype.h>
+#include <stdint.h>
+
 
 static float bound_max_speed(uint16_t max_speed) {
     /**
@@ -14,9 +16,7 @@ static float bound_max_speed(uint16_t max_speed) {
 
     uint16_t bounded_max_speed = 0;
 
-    if (max_speed < 0) {
-        bounded_max_speed = 0;
-    } else if (max_speed > 3073) {
+    if (max_speed > 3073) {
         bounded_max_speed = 3073;
     } else {
         bounded_max_speed = max_speed;

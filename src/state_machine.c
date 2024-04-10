@@ -299,14 +299,14 @@ void report_state_task(void *args) {
     while (1) {
         if (current_state.objective != OBJECTIVE_INIT) {
 
-            int max_length = snprintf(NULL, 0, "%f %f %f %d %f %f %f %f %f %d %f",
+            int max_length = snprintf(NULL, 0, "%f %f %f %d %f %f %d %f %f %d %f",
              current_state.x, current_state.y, current_state.rotation, current_state.action, current_state.roll,
-              current_state.pitch, current_state.speed, current_state.acceleration, current_state.speed, current_state.objective, current_state.total_displacement);
+              current_state.pitch, current_state.speed, current_state.acceleration, current_state.real_speed, current_state.objective, current_state.total_displacement);
 
             char message[max_length + 1]; 
-            snprintf(message, max_length + 1, "%f %f %f %d %f %f %f %f %f %d %f",
+            snprintf(message, max_length + 1, "%f %f %f %d %f %f %d %f %f %d %f",
              current_state.x, current_state.y, current_state.rotation, current_state.action, current_state.roll,
-              current_state.pitch, current_state.speed, current_state.acceleration, current_state.speed, current_state.objective, current_state.total_displacement);
+              current_state.pitch, current_state.speed, current_state.acceleration, current_state.real_speed, current_state.objective, current_state.total_displacement);
 
             mqtt_publish_message(*mqtt_client, message);
 

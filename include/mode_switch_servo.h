@@ -1,6 +1,11 @@
 #include "servo_pwm.h"
 #include <driver/gpio.h>
 
+
+#ifndef _MODE_SWITCH_SERVO_H
+#define _MODE_SWITCH_SERVO_H
+
+
 #define MODE_SWITCH_SERVO_PIN GPIO_NUM_42 //?
 
 
@@ -16,8 +21,10 @@ typedef enum {
     PULLEY_MODE = FULL_RIGHT,
 } ModeSwitchPosition;
 
-ModeSwitchPosition target_position = SHELL_MODE;
+int mode_switch_target_position = SHELL_MODE;
 
 void mode_switch_servo_init(void);
 void mode_switch_servo_set_position(ModeSwitchPosition position);
 void mode_switch_servo_task(void *args);
+
+#endif // _MODE_SWITCH_SERVO_H

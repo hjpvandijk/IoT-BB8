@@ -10,7 +10,7 @@ void drive_servo_forward(uint16_t speed) {
      * 
      * @return void
     */
-    servo_set_speed(&servo, speed);
+    servo_set_speed(&drive_servo, speed);
 }
 
 void drive_servo_backward(uint16_t speed) {
@@ -24,7 +24,7 @@ void drive_servo_backward(uint16_t speed) {
      * @return void
     */
     uint16_t speed_backwards = speed | (1 << 15);
-    servo_set_speed(&servo, speed_backwards);
+    servo_set_speed(&drive_servo, speed_backwards);
 
 }
 
@@ -38,7 +38,7 @@ void drive_servo_stop() {
      * @return void
     */
 
-    servo_set_speed(&servo, 0);
+    servo_set_speed(&drive_servo, 0);
 
 }
 
@@ -74,7 +74,7 @@ void drive_servo_stop_action() {
 }
 
 void drive_servo_configure(void) {
-    servo.uart = UART_NUM_2;
-    servo.servo_id = 1;
-    servo.state = servo_state;
+    drive_servo.uart = UART_NUM_2;
+    drive_servo.servo_id = 1;
+    drive_servo.state = servo_state;
 }

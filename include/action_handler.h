@@ -1,4 +1,8 @@
 #pragma once
+
+#ifndef _ACTION_HANDLER_H
+#define _ACTION_HANDLER_H
+
 #include "waveshare_servo.h"
 #include "drive_servo.h"
 #include "steering_servo.h"
@@ -62,3 +66,5 @@ void reset_stop_counter();
 int get_brake_pulse_counter();
 void increment_brake_pulse_counter();
 void reset_brake_pulse_counter();
+
+#endif // _ACTION_HANDLER_H

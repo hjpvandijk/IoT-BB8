@@ -37,8 +37,8 @@ void steering_servo_set_position(SteeringPosition position){
 
 void steering_servo_task(void *args) {
     while(1){
-        if(steering_servo->current_angle != target_position){
-            steering_servo_set_position(target_position);
+        if(steering_servo->current_angle != steering_target_position){
+            steering_servo_set_position(steering_target_position);
         }
         //Active balancing
         //Basically rotate the servo to the opposite direction of the current IMU angle relative to target orientation

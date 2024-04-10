@@ -1,5 +1,5 @@
-#ifndef _SERVO_H
-#define _SERVO_H
+#ifndef _WAVESHARE_SERVO_H
+#define _WAVESHARE_SERVO_H
 
 #include <stdint.h>
 
@@ -144,4 +144,4 @@ extern EventGroupHandle_t servo_received_flag;
 // UART DMA RX completed interrupt handler
 void servo_HAL_UART_RxCpltCallback(uint16_t size);
 
-#endif //_SERVO_H
+#endif //_WAVESHARE_SERVO_H3

@@ -1,5 +1,8 @@
 #include "driver/mcpwm_prelude.h"
 
+#ifndef _SERVO_PWM_H
+#define _SERVO_PWM_H
+
 
 typedef struct {
     int gpio;
@@ -20,7 +23,7 @@ typedef struct {
 
 servo_t* servo_create();
 
-static inline uint32_t example_angle_to_compare(int angle);
+// static inline uint32_t example_angle_to_compare(int angle);
 
 void init_servo(servo_t* servo, int gpio, int min_angle, int mid_angle, int max_angle, int delay_ms);
 
@@ -35,3 +38,6 @@ void rotate_servo_to_mid(servo_t* servo);
 
 // Rotate the servo to the maximum angle
 void rotate_servo_to_max(servo_t* servo);
+
+#endif // _SERVO_PWM_H
+

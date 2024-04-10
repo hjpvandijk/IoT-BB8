@@ -4,6 +4,8 @@
 
 #include <math.h>
 #include <string.h>
+#include <stdint.h>
+
 
 
 void process_objective_message(char* event_data) {

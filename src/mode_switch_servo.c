@@ -10,8 +10,6 @@ servo_t * mode_switch_servo;
 void mode_switch_servo_init(void){
     mode_switch_servo = servo_create();
     init_servo(mode_switch_servo, MODE_SWITCH_SERVO_PIN, FULL_LEFT, HORIZONTAL_POSITION, FULL_RIGHT, DELAY_MS);
-
-    
 }
 
 void mode_switch_servo_set_position(ModeSwitchPosition position){
@@ -32,9 +30,10 @@ void mode_switch_servo_set_position(ModeSwitchPosition position){
 
 void mode_switch_servo_task(void *args) {
     while(1){
-        if(mode_switch_servo->current_angle != target_position){
-            mode_switch_servo_set_position(target_position);
+        if(mode_switch_servo->current_angle != mode_switch_target_position){
+            mode_switch_servo_set_position(mode_switch_target_position);
         }  
     }
 
 }
+
