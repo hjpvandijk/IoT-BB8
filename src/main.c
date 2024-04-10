@@ -1,7 +1,7 @@
 // Local Imports
 #include "wifi.h"
 #include "mqtt.h"
-#include "pwm_motor.h"
+#include "drive_servo.h"
 #include "objective_handler.h"
 #include "action_handler.h"
 #include "imu.h"
@@ -128,7 +128,9 @@ void app_main() {
 
 
 
-    pwm_configure_motors();
+    drive_servo_configure();
+    steering_servo_init();
+    mode_switch_servo_init();
 
     connection_event_group = xEventGroupCreate();
 

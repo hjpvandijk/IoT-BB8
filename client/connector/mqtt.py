@@ -136,7 +136,7 @@ class MQTTClient:
                     pitch = float(payload[5])
                     speed = float(payload[6])
                     acceleration = float(payload[7])
-                    duty_cycle = float(payload[8])
+                    speed = float(payload[8])
                     objective = int(payload[9])
                     total_displacement = float(payload[10])
 
@@ -148,7 +148,7 @@ class MQTTClient:
                                     'roll': roll,
                                     'speed': speed,
                                     'acceleration': acceleration,
-                                    'duty_cycle': duty_cycle,
+                                    'speed': speed,
                                     'objective': objective,
                                     'total_displacement': total_displacement
                                     }

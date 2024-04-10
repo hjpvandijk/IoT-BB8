@@ -49,7 +49,7 @@ void set_current_roll(float roll) {
     current_state.roll = roll;
 }
 
-void set_current_speed(float speed) {
+void set_current_speed(uint16_t speed) {
     /**
      * Set the current speed
      * 
@@ -60,16 +60,6 @@ void set_current_speed(float speed) {
     current_state.speed = speed;
 }
 
-void set_current_duty_cycle(float duty_cycle) {
-    /**
-     * Set the current duty cycle
-     * 
-     * @param duty_cycle The current duty cycle
-     * 
-     * @return void
-    */
-    current_state.duty_cycle = duty_cycle;
-}
 
 void set_current_action(int action) {
     /**
@@ -140,15 +130,15 @@ void set_target_coordinates(float x, float y) {
     target.y = y;
 }
 
-void set_target_duty_cycle(float duty_cycle) {
+void set_target_speed(uint16_t speed) {
     /**
-     * Set the target duty cycle
+     * Set the target speed
      * 
-     * @param duty_cycle The target duty cycle
+     * @param speed The target speed
      * 
      * @return void
     */
-    target.duty_cycle = duty_cycle;
+    target.speed = speed;
 }
 
 State get_current_state() {
@@ -241,14 +231,6 @@ int get_previous_objective() {
     return current_state.previous_objective;
 }
 
-float get_current_duty_cycle() {
-    /**
-     * Get the current duty cycle
-     * 
-     * @return The current duty cycle
-    */
-    return current_state.duty_cycle;
-}
 
 float get_total_displacement() {
     /**
@@ -259,7 +241,7 @@ float get_total_displacement() {
     return current_state.total_displacement;
 }
 
-float get_current_speed() {
+uint16_t get_current_speed() {
     /**
      * Get the current speed
      * 
@@ -295,13 +277,13 @@ float get_target_y_pos() {
     return target.y;
 }
 
-float get_target_duty_cycle() {
+uint16_t get_target_speed() {
     /**
-     * Get the target duty cycle
+     * Get the target speed
      * 
-     * @return The target duty cycle
+     * @return The target speed
     */
-    return target.duty_cycle;
+    return target.speed;
 }
 
 void report_state_task(void *args) {
@@ -319,12 +301,12 @@ void report_state_task(void *args) {
 
             int max_length = snprintf(NULL, 0, "%f %f %f %d %f %f %f %f %f %d %f",
              current_state.x, current_state.y, current_state.rotation, current_state.action, current_state.roll,
-              current_state.pitch, current_state.speed, current_state.acceleration, current_state.duty_cycle, current_state.objective, current_state.total_displacement);
+              current_state.pitch, current_state.speed, current_state.acceleration, current_state.speed, current_state.objective, current_state.total_displacement);
 
             char message[max_length + 1]; 
             snprintf(message, max_length + 1, "%f %f %f %d %f %f %f %f %f %d %f",
              current_state.x, current_state.y, current_state.rotation, current_state.action, current_state.roll,
-              current_state.pitch, current_state.speed, current_state.acceleration, current_state.duty_cycle, current_state.objective, current_state.total_displacement);
+              current_state.pitch, current_state.speed, current_state.acceleration, current_state.speed, current_state.objective, current_state.total_displacement);
 
             mqtt_publish_message(*mqtt_client, message);
 

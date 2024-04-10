@@ -62,7 +62,7 @@ static bool rx_checksum_ok(const uint8_t total_msg_len)
  * @param ...
  * @return size of command in bytes
  */
-static size_t construct_message(uint8_t *buffer, const struct servo_handle_t *s, size_t data_bytes, ...)
+static size_t construct_message(uint8_t *buffer, const servo_handle_t *s, size_t data_bytes, ...)
 {
     va_list arg_ptr;
     uint8_t current_byte;
@@ -96,8 +96,8 @@ static size_t construct_message(uint8_t *buffer, const struct servo_handle_t *s,
 /**
  * Wrapper around ESP32 UART functions, so servo library is hardware-agnostic.
  */
-static enum servo_result_t read_write_blocking(
-    const struct servo_handle_t *s,
+static servo_result_t read_write_blocking(
+    const servo_handle_t *s,
     const uint8_t *tx, uint16_t tx_size,
     uint8_t *rx, uint16_t rx_size)
 {
@@ -134,9 +134,9 @@ static enum servo_result_t read_write_blocking(
     return SERVO_OK;
 }
 
-enum servo_result_t servo_command(const struct servo_handle_t *s, const uint8_t cmd)
+servo_result_t servo_command(const servo_handle_t *s, const uint8_t cmd)
 {
-    enum servo_result_t res;
+    servo_result_t res;
 
     size_t n_bytes = construct_message(tx_buffer, s, 1, cmd);
 
@@ -154,9 +154,9 @@ enum servo_result_t servo_command(const struct servo_handle_t *s, const uint8_t 
     return SERVO_OK;
 }
 
-enum servo_result_t servo_write_mem_addr(struct servo_handle_t *s, uint8_t addr, uint8_t value)
+servo_result_t servo_write_mem_addr(servo_handle_t *s, uint8_t addr, uint8_t value)
 {
-    enum servo_result_t res;
+    servo_result_t res;
 
     size_t n_bytes = construct_message(tx_buffer, s, 3, SERVO_MEM_WRITE_CMD, addr, value);
 
@@ -174,9 +174,9 @@ enum servo_result_t servo_write_mem_addr(struct servo_handle_t *s, uint8_t addr,
     return res;
 }
 
-enum servo_result_t servo_write_mem_addr_u16(struct servo_handle_t *s, uint8_t addr, uint16_t value)
+servo_result_t servo_write_mem_addr_u16(servo_handle_t *s, uint8_t addr, uint16_t value)
 {
-    enum servo_result_t res;
+    servo_result_t res;
 
     size_t n_bytes = construct_message(tx_buffer, s, 4, SERVO_MEM_WRITE_CMD, addr, (value & 0xff), (value >> 8));
 
@@ -194,9 +194,9 @@ enum servo_result_t servo_write_mem_addr_u16(struct servo_handle_t *s, uint8_t a
     return res;
 }
 
-enum servo_result_t servo_read_mem_addr(struct servo_handle_t *s, uint8_t addr, uint8_t *buf, size_t mem_bytes)
+servo_result_t servo_read_mem_addr(servo_handle_t *s, uint8_t addr, uint8_t *buf, size_t mem_bytes)
 {
-    enum servo_result_t res;
+    servo_result_t res;
 
     size_t n_bytes = construct_message(tx_buffer, s, 3, SERVO_MEM_READ_CMD, addr, mem_bytes);
 
@@ -219,9 +219,9 @@ enum servo_result_t servo_read_mem_addr(struct servo_handle_t *s, uint8_t addr, 
     return SERVO_OK;
 }
 
-enum servo_result_t servo_enable_wheel_mode(struct servo_handle_t *s)
+servo_result_t servo_enable_wheel_mode(servo_handle_t *s)
 {
-    enum servo_result_t res;
+    servo_result_t res;
 
     res = servo_write_mem_addr(s, SERVO_SRAM_LOCK, 0);
     if (res != SERVO_OK)
@@ -247,24 +247,24 @@ enum servo_result_t servo_enable_wheel_mode(struct servo_handle_t *s)
     return SERVO_OK;
 }
 
-enum servo_result_t servo_ping(struct servo_handle_t *s)
+servo_result_t servo_ping(servo_handle_t *s)
 {
     return servo_command(s, SERVO_PING_CMD);
 }
 
-enum servo_result_t servo_set_servo_position(struct servo_handle_t *s, uint16_t angle_u16)
+servo_result_t servo_set_servo_position(servo_handle_t *s, uint16_t angle_u16)
 {
     return servo_write_mem_addr_u16(s, SERVO_SRAM_GOAL_POSITION_L, angle_u16);
 }
 
-enum servo_result_t servo_set_speed(struct servo_handle_t *s, uint16_t speed_u16)
+servo_result_t servo_set_speed(servo_handle_t *s, uint16_t speed_u16)
 {
     return servo_write_mem_addr_u16(s, SERVO_SRAM_GOAL_SPEED_L, speed_u16);
 }
 
-enum servo_result_t servo_init(struct servo_handle_t *s, uint8_t acc, uint16_t goal_speed)
+servo_result_t servo_init(servo_handle_t *s, uint8_t acc, uint16_t goal_speed)
 {
-    enum servo_result_t res;
+    servo_result_t res;
     res = servo_write_mem_addr(s, SERVO_SRAM_ACC, acc);
     if (res != SERVO_OK)
     {
@@ -283,9 +283,9 @@ enum servo_result_t servo_init(struct servo_handle_t *s, uint8_t acc, uint16_t g
 }
 
 // This entire read function costs 1.04 ms at a baud rate of 1M
-enum servo_result_t servo_read_state(struct servo_handle_t *s)
+servo_result_t servo_read_state(servo_handle_t *s)
 {
-    enum servo_result_t res;
+    servo_result_t res;
     uint8_t mem_buff[2];
 
     res = servo_read_mem_addr(s, SERVO_SRAM_PRESENT_VOLTAGE, mem_buff, 1);
@@ -331,7 +331,7 @@ enum servo_result_t servo_read_state(struct servo_handle_t *s)
     return SERVO_OK;
 }
 
-float servo_get_position_degrees(const struct servo_handle_t *s)
+float servo_get_position_degrees(const servo_handle_t *s)
 {
     // In the Waveshare servo reference library, the position is represented as 16-bit
     // sign-magnitude, but in reality, it's a 12 bit unsigned value, which is

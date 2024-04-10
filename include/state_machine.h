@@ -34,7 +34,7 @@ typedef struct {
     float rotation;
     float pitch;
     float roll;
-    float duty_cycle;
+    float speed;
     float speed;
     float acceleration;
     float total_displacement;
@@ -46,7 +46,7 @@ typedef struct {
 typedef struct {
     float x;
     float y;
-    float duty_cycle;
+    uint16_t speed;
 } Target;
 
 
@@ -57,27 +57,26 @@ void set_current_coordinates(float x, float y);
 void set_current_action(int action);
 void set_current_objective(int objective);
 void set_current_rotation(float rotation);
-void set_current_speed(float speed);
-void set_current_duty_cycle(float duty_cycle);
+void set_current_speed(uint16_t speed);
 void set_current_acceleration(float acceleration);
 void set_current_pitch(float pitch);
 void set_current_roll(float roll);
 void set_total_displacement(float total_displacement);
 void set_target_coordinates(float x, float y);
-void set_target_duty_cycle(float duty_cycle);
+void set_target_speed(uint16_t speed);
 void set_previous_objective(int previous_objective);
 float get_current_x_pos();
 float get_current_y_pos();
 float get_current_rotation();
-float get_current_duty_cycle();
-float get_current_speed();
+uint16_t get_current_speed();
+uint16_t get_current_speed();
 float get_current_acceleration();
 float get_current_pitch();
 float get_current_roll();
 float get_total_displacement();
 float get_target_x_pos();
 float get_target_y_pos();
-float get_target_duty_cycle();
+uint16_t get_target_speed();
 int get_current_action();
 int get_current_objective();
 int get_previous_objective();

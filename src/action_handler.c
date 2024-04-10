@@ -4,6 +4,8 @@
 volatile int stop_counter = 0;
 volatile int brake_pulse_counter = 0;
 
+int action_before_turning = ACTION_NONE;
+
 int process_objective_switch(int previous_objective, int current_objective) {
     /**
      * Process the objective switch
@@ -16,10 +18,11 @@ int process_objective_switch(int previous_objective, int current_objective) {
     if (previous_objective != current_objective) {
         if (previous_objective == OBJECTIVE_FORWARD || previous_objective == OBJECTIVE_BACKWARD) {
             if (get_current_action() == ACTION_FORWARD || get_current_action() == ACTION_BACKWARD) {
-                set_current_action(ACTION_STOP);
+                // set_current_action(ACTION_STOP);
                 return 1;
             }
         } else if (previous_objective == OBJECTIVE_TURN_LEFT || previous_objective == OBJECTIVE_TURN_RIGHT) {
+            action_before_turning = previous_objective;
             stop_turn_action(true);
             return 1;
         } else if (previous_objective == OBJECTIVE_MOVETO) {
@@ -50,6 +53,7 @@ void process_objective(State state, Target target) {
     if (process_objective_switch(state.previous_objective, state.objective)) {
         return;
     }
+
 
     if (state.objective == OBJECTIVE_NONE) {
         return;
@@ -221,7 +225,8 @@ void process_action(State state, Target target, TickType_t* last_turn_pulse) {
         return;
     }
     else if (state.action == ACTION_TURN_LEFT || state.action == ACTION_TURN_RIGHT) {
-        do_turn_pulse(state, last_turn_pulse);
+        // do_turn_pulse(state, last_turn_pulse);
+        turn_action(state, state.action);
         return;
     }
     return;
@@ -235,68 +240,8 @@ void stop_action(State state) {
      * 
      * @return void
     */
-    motor_action_data_t motor_action_data;
-    motor_action_data.motor_id = MOTOR_ALL;
-
-    // Check safely if duty cycle is float 0
-    if (state.duty_cycle < EPSILON) {
-        float roll_difference = state.roll - ROLL_STEADY_STATE;
-
-        if (fabs(roll_difference) < ROLL_OFFSET) { 
-            increment_stop_counter();
-            reset_brake_pulse_counter();
-            pwm_stop_action(motor_action_data);
-            if (get_stop_counter() >= (BRAKE_STEADY_PERIOD_MS/DECISION_INTERVAL_TIME_MS)) {
-                reset_stop_counter();
-                set_current_action(ACTION_NONE);
-            }
-            return;
-        }
-        else {
-            reset_stop_counter();
-            increment_brake_pulse_counter();
-
-            if (get_brake_pulse_counter() >= (BRAKE_PULSE_PERIOD_MS/DECISION_INTERVAL_TIME_MS)) {
-                reset_brake_pulse_counter();
-                float duty_cycle = fabs(roll_difference)*BRAKE_PULSE_DUTY_CYCLE_MULTIPLIER;
-                motor_action_data.duty_cycle_left = duty_cycle;
-                motor_action_data.duty_cycle_right = duty_cycle;
-
-                // If we are not steady, we need to pulse to compensate
-                if (roll_difference > 0){
-                    pwm_forward_action(motor_action_data);
-                } else {
-                    pwm_backward_action(motor_action_data);
-                } 
-            } else {
-                // Wait for the pulse to finish and then stop
-                pwm_stop_action(motor_action_data);
-            }
-            return;
-
-        }
-    } else {
-        reset_stop_counter();
-
-        float adjusted_duty_cycle = state.duty_cycle;
-
-        if (state.duty_cycle > EPSILON + BRAKE_STEP_SIZE) {
-            adjusted_duty_cycle -= BRAKE_STEP_SIZE;
-        } else {
-            adjusted_duty_cycle = 0.0f;
-        }
-
-        motor_action_data.duty_cycle_left = adjusted_duty_cycle;
-        motor_action_data.duty_cycle_right = adjusted_duty_cycle;
-
-        if (get_previous_objective() == OBJECTIVE_BACKWARD){
-            pwm_backward_action(motor_action_data);
-        } else {
-            pwm_forward_action(motor_action_data);
-        }
-
-        set_current_duty_cycle(adjusted_duty_cycle);    
-    }
+    drive_servo_stop();
+    set_current_speed(0);
     return;
 }
 
@@ -309,22 +254,22 @@ void forward_action(State state, Target target) {
      * 
      * @return void
     */
-    motor_action_data_t motor_action_data;
-    motor_action_data.motor_id = MOTOR_ALL;
+    // motor_action_data_t motor_action_data;
+    // motor_action_data.motor_id = MOTOR_ALL;
 
-    float adjusted_duty_cycle = current_state.duty_cycle;
+    // float adjusted_duty_cycle = current_state.duty_cycle;
 
-    if (current_state.duty_cycle < target.duty_cycle - ACCEL_STEP_SIZE) {
-        adjusted_duty_cycle += ACCEL_STEP_SIZE;
-    } else {
-        adjusted_duty_cycle = target.duty_cycle;
-    }
+    // if (current_state.duty_cycle < target.speed - ACCEL_STEP_SIZE) {
+    //     adjusted_duty_cycle += ACCEL_STEP_SIZE;
+    // } else {
+    //     adjusted_duty_cycle = target.speed;
+    // }
 
-    motor_action_data.duty_cycle_left = adjusted_duty_cycle;
-    motor_action_data.duty_cycle_right = adjusted_duty_cycle;
+    // motor_action_data.duty_cycle_left = adjusted_duty_cycle;
+    // motor_action_data.duty_cycle_right = adjusted_duty_cycle;
 
-    pwm_forward_action(motor_action_data);
-    set_current_duty_cycle(adjusted_duty_cycle);
+    drive_servo_forward(target.speed);
+    set_current_speed(target.speed);
     
     return;
 }
@@ -338,51 +283,39 @@ void backward_action(State state, Target target) {
      * 
      * @return void
     */
-    motor_action_data_t motor_action_data;
-    motor_action_data.motor_id = MOTOR_ALL;
 
-    float adjusted_duty_cycle = current_state.duty_cycle;
 
-    if (current_state.duty_cycle < target.duty_cycle - ACCEL_STEP_SIZE) {
-        adjusted_duty_cycle += ACCEL_STEP_SIZE;
-    } else {
-        adjusted_duty_cycle = target.duty_cycle;
-    }
-
-    motor_action_data.duty_cycle_left = adjusted_duty_cycle;
-    motor_action_data.duty_cycle_right = adjusted_duty_cycle;
-
-    pwm_backward_action(motor_action_data);
-    set_current_duty_cycle(adjusted_duty_cycle);
+    drive_servo_backward(target.speed);
+    set_current_speed(target.speed);
     
     return;
 }
 
-void do_turn_pulse(State state, TickType_t* last_turn_pulse) {
-    /**
-     * Do a turn pulse
-     * 
-     * @param state The current state
-     * @param target The target state
-     * 
-     * @return void
-    */
+// void do_turn_pulse(State state, TickType_t* last_turn_pulse) {
+//     /**
+//      * Do a turn pulse
+//      * 
+//      * @param state The current state
+//      * @param target The target state
+//      * 
+//      * @return void
+//     */
 
-    if ((xTaskGetTickCount() - *last_turn_pulse) < (TURN_INTERVAL_MS+TURN_PULSE_MS) / portTICK_PERIOD_MS) {
-        if ((xTaskGetTickCount() - *last_turn_pulse) > TURN_INTERVAL_MS / portTICK_PERIOD_MS) {
-            // Turn for a short pulse if we have waited for TURN_INTERVAL_MS
-            turn_action(state, state.action);
-            return;
-        }
-        return;
-    } else {
-        // set the value of last turn pulse to the current tick count
-        *last_turn_pulse = xTaskGetTickCount();
-        // Stop turning gracefully
-        stop_turn_action(false);
-        return;
-    }
-}
+//     if ((xTaskGetTickCount() - *last_turn_pulse) < (TURN_INTERVAL_MS+TURN_PULSE_MS) / portTICK_PERIOD_MS) {
+//         if ((xTaskGetTickCount() - *last_turn_pulse) > TURN_INTERVAL_MS / portTICK_PERIOD_MS) {
+//             // Turn for a short pulse if we have waited for TURN_INTERVAL_MS
+//             turn_action(state, state.action);
+//             return;
+//         }
+//         return;
+//     } else {
+//         // set the value of last turn pulse to the current tick count
+//         *last_turn_pulse = xTaskGetTickCount();
+//         // Stop turning gracefully
+//         stop_turn_action(false);
+//         return;
+//     }
+// }
 
 void stop_turn_action(bool final_turn) {
     /**
@@ -394,15 +327,14 @@ void stop_turn_action(bool final_turn) {
      * @return void
     */
 
-    motor_action_data_t motor_action_data;
-    motor_action_data.motor_id = MOTOR_ALL;
-    pwm_stop_action(motor_action_data);
+    // drive_servo_stop_action();
 
-    if (final_turn) {
-        set_current_action(ACTION_NONE);
-    }
+    steering_servo_set_position(MID);
+    
 
-    set_current_duty_cycle(0.0f);
+    set_current_action(action_before_turning);
+
+    // set_current_speed(0.0f);
     return;
 }
 
@@ -416,35 +348,16 @@ void turn_action(State state, int action) {
      * @return void
     */
 
-    motor_action_data_t motor_action_data_left;
-    motor_action_data_t motor_action_data_right;
-
-    float adjusted_duty_cycle = current_state.duty_cycle;
-
-    if (current_state.duty_cycle < TURN_DUTY_CYCLE - TURN_STEP_SIZE) {
-        adjusted_duty_cycle += TURN_STEP_SIZE;
-    } else {
-        adjusted_duty_cycle = TURN_DUTY_CYCLE;
-    }
-
-    motor_action_data_left.duty_cycle_left = adjusted_duty_cycle;
-    motor_action_data_left.duty_cycle_right = adjusted_duty_cycle;
-    motor_action_data_right.duty_cycle_left = adjusted_duty_cycle;
-    motor_action_data_right.duty_cycle_right = adjusted_duty_cycle;
 
    if (action == ACTION_TURN_RIGHT) {
-        motor_action_data_left.motor_id = MOTOR_LEFT;
-        pwm_forward_action(motor_action_data_left);
-        motor_action_data_right.motor_id = MOTOR_RIGHT;
-        pwm_backward_action(motor_action_data_right);
+        // steering servo left
+        steering_servo_set_position(LEFT);
     } else if (action == ACTION_TURN_LEFT) {
-        motor_action_data_left.motor_id = MOTOR_LEFT;
-        pwm_backward_action(motor_action_data_left);
-        motor_action_data_right.motor_id = MOTOR_RIGHT;
-        pwm_forward_action(motor_action_data_right);
+        //steering servo right
+        steering_servo_set_position(RIGHT);
     }
 
-    set_current_duty_cycle(adjusted_duty_cycle);
+
     return;
 }
 

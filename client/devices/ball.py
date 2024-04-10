@@ -18,8 +18,8 @@ class Ball:
         # Internal state
         self.action = None
         self.objective = None
-        self.max_duty_cycle = 100
-        self.duty_cycle = None
+        self.max_speed = 3073
+        self.speed = None
         self.x_pos = None
         self.y_pos = None
 
@@ -86,17 +86,17 @@ class Ball:
         :return: None
         """
         if objective_type == ObjectiveType.FORWARD:
-            mqtt_connector.publish(self.topic, f"FW {float(data['max_duty_cycle'])}")
+            mqtt_connector.publish(self.topic, f"FW {float(data['max_speed'])}")
         elif objective_type == ObjectiveType.BACKWARD:
-            mqtt_connector.publish(self.topic, f"BW {float(data['max_duty_cycle'])}")
+            mqtt_connector.publish(self.topic, f"BW {float(data['max_speed'])}")
         elif objective_type == ObjectiveType.TURN_LEFT:
-            mqtt_connector.publish(self.topic, f"TL {float(data['max_duty_cycle'])}")
+            mqtt_connector.publish(self.topic, f"TL {float(data['max_speed'])}")
         elif objective_type == ObjectiveType.TURN_RIGHT:
-            mqtt_connector.publish(self.topic, f"TR {float(data['max_duty_cycle'])}")
+            mqtt_connector.publish(self.topic, f"TR {float(data['max_speed'])}")
         elif objective_type == ObjectiveType.STOP:
             mqtt_connector.publish(self.topic, "ST")
         elif objective_type == ObjectiveType.MOVETO:
-            mqtt_connector.publish(self.topic, f"MT {data['x']} {data['y']} {float(data['max_duty_cycle'])}")
+            mqtt_connector.publish(self.topic, f"MT {data['x']} {data['y']} {float(data['max_speed'])}")
         elif objective_type == ObjectiveType.REBOOT:
             mqtt_connector.publish(self.topic, "RB")
         elif objective_type == ObjectiveType.INIT:

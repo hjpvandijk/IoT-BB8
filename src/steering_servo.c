@@ -1,6 +1,10 @@
 #include "state_machine.h"
 #include <steering_servo.h>
 
+#include "esp_log.h"
+
+static const char* STEERING_SERVO_TAG = "STEERING_SERVO";
+
 
 servo_t * steering_servo;
 
@@ -15,15 +19,15 @@ void steering_servo_set_position(SteeringPosition position){
     switch (position)
     {
     case LEFT:
-        ESP_LOGI("steering_servo", "Setting position to LEFT");
+        ESP_LOGI(STEERING_SERVO_TAG, "Setting position to LEFT");
         rotate_servo_to_min(steering_servo);
         break;
     case MID:
-        ESP_LOGI("steering_servo", "Setting position to MID");
+        ESP_LOGI(STEERING_SERVO_TAG, "Setting position to MID");
         rotate_servo_to_mid(steering_servo);
         break;
     case RIGHT:
-        ESP_LOGI("steering_servo", "Setting position to RIGHT");
+        ESP_LOGI(STEERING_SERVO_TAG, "Setting position to RIGHT");
         rotate_servo_to_max(steering_servo);
         break;
     default:

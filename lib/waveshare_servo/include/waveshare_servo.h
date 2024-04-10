@@ -87,7 +87,7 @@ typedef struct
 {
   uart_port_t uart;
   uint8_t servo_id;
-  struct servo_state_t state;
+  servo_state_t state;
 } servo_handle_t;
 
 typedef enum 
@@ -102,33 +102,33 @@ typedef enum
 
 // Helper functions
 
-float servo_get_position_degrees(const struct servo_handle_t *s);
+float servo_get_position_degrees(const servo_handle_t *s);
 
 // LL servo API, are blocking functions
 
-enum servo_result_t servo_command(const struct servo_handle_t *s, uint8_t cmd);
-enum servo_result_t servo_write_mem_addr(struct servo_handle_t *s, uint8_t addr, uint8_t value);
-enum servo_result_t servo_write_mem_addr_u16(struct servo_handle_t *s, uint8_t addr, uint16_t value);
-enum servo_result_t servo_read_mem_addr(struct servo_handle_t *s, uint8_t addr, uint8_t *value, size_t mem_bytes);
+servo_result_t servo_command(const servo_handle_t *s, uint8_t cmd);
+servo_result_t servo_write_mem_addr(servo_handle_t *s, uint8_t addr, uint8_t value);
+servo_result_t servo_write_mem_addr_u16(servo_handle_t *s, uint8_t addr, uint16_t value);
+servo_result_t servo_read_mem_addr(servo_handle_t *s, uint8_t addr, uint8_t *value, size_t mem_bytes);
 
 // Servo API
 
-enum servo_result_t servo_enable_wheel_mode(struct servo_handle_t *s);
-enum servo_result_t servo_enable_servo_mode(struct servo_handle_t *s);
+servo_result_t servo_enable_wheel_mode(servo_handle_t *s);
+servo_result_t servo_enable_servo_mode(servo_handle_t *s);
 
-enum servo_result_t servo_init(struct servo_handle_t *s, uint8_t acc, uint16_t goal_speed);
-enum servo_result_t servo_ping(struct servo_handle_t *s);
-enum servo_result_t servo_read_state(struct servo_handle_t *s);
+servo_result_t servo_init(servo_handle_t *s, uint8_t acc, uint16_t goal_speed);
+servo_result_t servo_ping(servo_handle_t *s);
+servo_result_t servo_read_state(servo_handle_t *s);
 
 /**
  * Set servo desired position, should only be used in servo mode
  */
-enum servo_result_t servo_set_servo_position(struct servo_handle_t *s, uint16_t angle_u16);
+servo_result_t servo_set_servo_position(servo_handle_t *s, uint16_t angle_u16);
 
 /**
  * Set servo desired speed, should only be used in wheel mode
  */
-enum servo_result_t servo_set_speed(struct servo_handle_t *s, uint16_t speed_u16);
+servo_result_t servo_set_speed(servo_handle_t *s, uint16_t speed_u16);
 
 // HAL wrapper code
 
