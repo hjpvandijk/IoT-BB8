@@ -6,12 +6,12 @@
 #define _MODE_SWITCH_SERVO_H
 
 
-#define MODE_SWITCH_SERVO_PIN GPIO_NUM_42 //?
+#define MODE_SWITCH_SERVO_PIN GPIO_NUM_22 //?
 
 
-#define HORIZONTAL_POSITION 90
-#define FULL_RIGHT 140
-#define FULL_LEFT 40
+#define HORIZONTAL_POSITION 0
+#define FULL_RIGHT 50
+#define FULL_LEFT -50
 
 #define DELAY_MS 0
 
@@ -21,7 +21,7 @@ typedef enum {
     PULLEY_MODE = FULL_RIGHT,
 } ModeSwitchPosition;
 
-int mode_switch_target_position = SHELL_MODE;
+extern int mode_switch_target_position;
 
 void mode_switch_servo_init(void);
 void mode_switch_servo_set_position(ModeSwitchPosition position);

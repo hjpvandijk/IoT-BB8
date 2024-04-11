@@ -6,10 +6,7 @@
 #include <driver/gpio.h>
 #include "waveshare_servo.h"
 
-
-
-servo_state_t servo_state; // Initialize all members to zero
-servo_handle_t drive_servo;
+extern servo_handle_t drive_servo;
 
 // Define motor pins
 #define SERVO_GPIO GPIO_NUM_15 //?

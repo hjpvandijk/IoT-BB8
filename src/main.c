@@ -49,7 +49,8 @@ const char* password =  "perenpatser";
 
 
 // MQTT
-const char* broker_uri = "mqtt://192.168.56.1";
+// const char* broker_uri = "mqtt://192.168.56.1";
+const char* broker_uri = "mqtt://broker.hivemq.com";
 esp_mqtt_client_handle_t mqtt_client;
 
 // Flags
@@ -138,27 +139,29 @@ void app_main() {
     init_wifi(&connection_event_group, ssid, password);
     init_mqtt(&connection_event_group, &mqtt_client, broker_uri);
 
-    xTaskCreate(imu_task, "imu_task", 4096, &imu_data, 10, NULL);
+    // xTaskCreate(imu_task, "imu_task", 4096, &imu_data, 10, NULL);
     xTaskCreate(report_state_task, "state_task", 4096, &mqtt_client, 10, NULL);
     xTaskCreate(test_connection_task, "test_connection_task", 4096, NULL, 10, NULL);
+    // xTaskCreate(steering_servo_task, "steering_servo_task", 4096, NULL, 10, NULL);
 
-    TickType_t last_wakeup_time = xTaskGetTickCount(); 
+
+    // TickType_t last_wakeup_time = xTaskGetTickCount(); 
     TickType_t last_turn_pulse = xTaskGetTickCount(); 
 
-    vector_t current_compensated_va = imu_data.compensated_va;
-    vector_t last_compensated_va = imu_data.compensated_va;
-    vector_t last_velocity = {0.0f, 0.0f, 0.0f};
+    // vector_t current_compensated_va = imu_data.compensated_va;
+    // vector_t last_compensated_va = imu_data.compensated_va;
+    // vector_t last_velocity = {0.0f, 0.0f, 0.0f};
 
-    float x_array[arraysize];
-    float y_array[arraysize];
-    float z_array[arraysize];
-    int array_index = 0;
+    // float x_array[arraysize];
+    // float y_array[arraysize];
+    // float z_array[arraysize];
+    // int array_index = 0;
 
-    int tick_counter = 0;
+    // int tick_counter = 0;
 
-    bool xy_set = false;
-    float x = 0.0f;
-    float y = 0.0f;
+    // bool xy_set = false;
+    // float x = 0.0f;
+    // float y = 0.0f;
 
     
 

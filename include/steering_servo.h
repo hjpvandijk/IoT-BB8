@@ -4,12 +4,12 @@
 #ifndef _STEERING_SERVO_H
 #define _STEERING_SERVO_H
 
-#define STEERING_SERVO_PIN GPIO_NUM_43 //D6
+#define STEERING_SERVO_PIN GPIO_NUM_4 //D6
 
 
-#define HORIZONTAL_POSITION 90
-#define FULL_RIGHT 140
-#define FULL_LEFT 40
+#define HORIZONTAL_POSITION 10
+#define FULL_RIGHT -30
+#define FULL_LEFT 50
 
 #define DELAY_MS 0
 
@@ -20,7 +20,7 @@ typedef enum {
     RIGHT = FULL_RIGHT,
 } SteeringPosition;
 
-int steering_target_position = MID;
+extern int steering_target_position;
 
 void steering_servo_init(void);
 void steering_servo_set_position(SteeringPosition position);
