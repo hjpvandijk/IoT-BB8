@@ -6,6 +6,8 @@
 #include <string.h>
 #include <stdint.h>
 
+#include "esp_log.h"
+
 
 
 void process_objective_message(char* event_data) {
@@ -29,6 +31,7 @@ void process_objective_message(char* event_data) {
         float max_speed;
 
         if (sscanf(event_data, "BW %f", &max_speed) == 1) {
+            ESP_LOGI("OBJECTIVE_HANDLER", "BW %f", max_speed);
             float bounded_max_speed = bound_max_speed(max_speed);
             set_previous_objective(get_current_objective());
             set_current_objective(OBJECTIVE_BACKWARD);
@@ -52,10 +55,21 @@ void process_objective_message(char* event_data) {
             set_current_objective(OBJECTIVE_TURN_RIGHT);
             set_target_speed(bounded_max_speed);
         }
+   } else if (strncmp(event_data, "SM", 2) == 0) {
+        ESP_LOGI("OBJECTIVE_HANDLER", "SM");
+        set_previous_objective(get_current_objective());
+        set_current_objective(OBJECTIVE_SWITCH_TO_SHELL_MODE);
+        set_target_speed(SWITCH_MODE_SPEED);
+    } else if (strncmp(event_data, "PM", 2) == 0) {
+        ESP_LOGI("OBJECTIVE_HANDLER", "PM");
+        set_previous_objective(get_current_objective());
+        set_current_objective(OBJECTIVE_SWITCH_TO_PULLEY_MODE);
+        set_target_speed(SWITCH_MODE_SPEED);
     } else if (strncmp(event_data, "ST", 2) == 0) {
+        ESP_LOGI("OBJECTIVE_HANDLER", "ST");
         set_previous_objective(get_current_objective());
         set_current_objective(OBJECTIVE_STOP);
-        set_target_speed(0.0);
+        set_target_speed(0);
     } else if (strncmp(event_data, "MT", 2) == 0) {
         float x, y, max_speed;
 

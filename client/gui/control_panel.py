@@ -175,6 +175,12 @@ class ControlPanel:
         backward_button = tk.Button(self.root, text="Backward", command=self.move_backward)
         backward_button.grid(row=self.grid_row_offset + 4, column=0, padx=(100, 0))
 
+        shell_mode_button = tk.Button(self.root, text="Shell Mode", command=self.switch_to_shell_mode)
+        shell_mode_button.grid(row=self.grid_row_offset + 4, column=0, padx=(500, 0))
+
+        pulley_mode_button = tk.Button(self.root, text="Pulley Mode", command=self.switch_to_pulley_mode)
+        pulley_mode_button.grid(row=self.grid_row_offset + 5, column=0, padx=(500, 0))
+
         stop_button = tk.Button(self.root, text="Stop", command=self.stop_movement)
         stop_button.grid(row=self.grid_row_offset + 4, column=0, padx=(300, 0))
 
@@ -203,11 +209,11 @@ class ControlPanel:
         max_speed_label.grid(row=self.grid_row_offset + 8, column=0, padx=(0, 180))
 
         self.max_speed_value = tk.IntVar()
-        self.max_speed_slider = tk.Scale(self.root, from_=0, to=100, orient="horizontal",
+        self.max_speed_slider = tk.Scale(self.root, from_=0, to=3000, orient="horizontal",
                                               variable=self.max_speed_value,
                                               command=self.on_max_speed_update)
         self.max_speed_slider.grid(row=self.grid_row_offset + 8, column=0, padx=(50, 0), pady=(0, 20))
-        self.max_speed_slider.set(100)
+        self.max_speed_slider.set(800)
 
         self.imu_header = tk.Label(self.root, text=f"\t\tIMU Data:\t\t")
         self.imu_header.grid(row=1, column=1)
@@ -418,6 +424,12 @@ class ControlPanel:
             elif event.keysym == 'Right':
                 self.active_key = event.keysym
                 self.turn_right()
+            elif event.keysym == 'p':
+                self.active_key = event.keysym
+                self.switch_to_pulley_mode()
+            elif event.keysym == 's':
+                self.active_key = event.keysym
+                self.switch_to_shell_mode()
 
     def on_key_release(self, event):
         """
@@ -658,7 +670,7 @@ class ControlPanel:
             if self.initial_ball_warning:
                 self.initial_ball_warning.destroy()
             self.ball_selector.set('Select a ball')
-            self.max_speed_slider.set(100)
+            self.max_speed_slider.set(3000)
             self.selected_ball = None
 
         logging.info(f"[GUI] Disconnected ball: {ball.name}")
@@ -694,6 +706,22 @@ class ControlPanel:
         :return: None
         """
         self.single_movement_objective(ObjectiveType.BACKWARD)
+
+    def switch_to_shell_mode(self):
+        """
+        Switches to shell mode. If the ball has a target location, a warning will be logged.
+        If no ball is selected, a warning will be logged.
+        :return: None
+        """
+        self.single_movement_objective(ObjectiveType.SWITCH_TO_SHELL_MODE)
+
+    def switch_to_pulley_mode(self):
+        """
+        Switches to shell mode. If the ball has a target location, a warning will be logged.
+        If no ball is selected, a warning will be logged.
+        :return: None
+        """
+        self.single_movement_objective(ObjectiveType.SWITCH_TO_PULLEY_MODE)
 
     def single_movement_objective(self, objective_type):
         """

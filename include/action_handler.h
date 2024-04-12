@@ -6,6 +6,7 @@
 #include "waveshare_servo.h"
 #include "drive_servo.h"
 #include "steering_servo.h"
+#include "mode_switch_servo.h"
 #include "state_machine.h"
 #include <math.h>
 #include "esp_system.h"
@@ -60,6 +61,7 @@ void backward_action(State state, Target target);
 // void do_turn_pulse(State state, TickType_t* last_turn_pulse);
 void stop_turn_action(bool final_turn);
 void turn_action(State state, int action);
+void switch_to_action(int action);
 int get_stop_counter();
 void increment_stop_counter();
 void reset_stop_counter();

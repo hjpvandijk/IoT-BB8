@@ -1,6 +1,8 @@
 #include <action_handler.h>
 #include "state_machine.h"
 
+#include "esp_log.h"
+
 volatile int stop_counter = 0;
 volatile int brake_pulse_counter = 0;
 
@@ -16,11 +18,9 @@ int process_objective_switch(int previous_objective, int current_objective) {
      * @return 1 if the objective has changed, 0 otherwise
     */
     if (previous_objective != current_objective) {
-        if (previous_objective == OBJECTIVE_FORWARD || previous_objective == OBJECTIVE_BACKWARD) {
-            if (get_current_action() == ACTION_FORWARD || get_current_action() == ACTION_BACKWARD) {
-                // set_current_action(ACTION_STOP);
+        if ((previous_objective == OBJECTIVE_FORWARD &&get_current_action() == ACTION_BACKWARD) || (previous_objective == OBJECTIVE_BACKWARD && get_current_action() == ACTION_FORWARD)) {
+                set_current_action(ACTION_STOP);
                 return 1;
-            }
         } else if (previous_objective == OBJECTIVE_TURN_LEFT || previous_objective == OBJECTIVE_TURN_RIGHT) {
             action_before_turning = previous_objective;
             stop_turn_action(true);
@@ -49,54 +49,58 @@ void process_objective(State state, Target target) {
      * 
      * @return void
     */
-
-    if (process_objective_switch(state.previous_objective, state.objective)) {
-        return;
-    }
+    // ESP_LOGI("ACTION_HANDLER", "PROCESSING OBJECTIVE");
+    // if (process_objective_switch(state.previous_objective, state.objective)) {
+    //     return;
+    // }
 
 
     if (state.objective == OBJECTIVE_NONE) {
+        state.action = ACTION_NONE;
         return;
     }
 
     if (state.objective == OBJECTIVE_FORWARD) {
-        if (state.action == ACTION_NONE) {
+        ESP_LOGI("ACTION_HANDLER", "RECEIVED FORWARDS, %d", state.action);
+        // if (state.action == ACTION_NONE) {
             set_current_action(ACTION_FORWARD);
             return;
-        }
+        // }
         return;
     }  
 
     if (state.objective == OBJECTIVE_BACKWARD) {
-        if (state.action == ACTION_NONE) {
+        ESP_LOGI("ACTION_HANDLER", "RECEIVED BACKWARDS, %d", state.action);
+        // if (state.action == ACTION_NONE) {
             set_current_action(ACTION_BACKWARD);
             return;
-        }
+        // }
         return;
     }
 
     if (state.objective == OBJECTIVE_STOP) {
-        if (state.action == ACTION_NONE) {
+        ESP_LOGI("ACTION_HANDLER", "RECEIVED STOP, %d", state.action);
+        // if (state.action == ACTION_NONE) {
             set_previous_objective(get_current_objective());
             set_current_objective(OBJECTIVE_NONE);
             return;
-        }
+        // }
         return;
     }  
 
     if (state.objective == OBJECTIVE_TURN_LEFT) {
-        if (state.action == ACTION_NONE) {
+        // if (state.action == ACTION_NONE) {
             set_current_action(ACTION_TURN_LEFT);
             return;
-        }
+        // }
         return;
     }
 
     if (state.objective == OBJECTIVE_TURN_RIGHT) {
-        if (state.action == ACTION_NONE) {
+        // if (state.action == ACTION_NONE) {
             set_current_action(ACTION_TURN_RIGHT);
             return;
-        }
+        // }
         return;
     }  
 
@@ -213,20 +217,26 @@ void process_action(State state, Target target, TickType_t* last_turn_pulse) {
         return;
     }
     else if (state.action == ACTION_STOP) {
+        ESP_LOGI("ACTION_HANDLER", "ACTION STOP");
         stop_action(state);
         return;
     }
     else if (state.action == ACTION_FORWARD) {
+        ESP_LOGI("ACTION_HANDLER", "ACTION FORWARDS");
         forward_action(state, target);
         return;
     }
     else if (state.action == ACTION_BACKWARD) {
+        ESP_LOGI("ACTION_HANDLER", "ACTION BACKWARDS");
         backward_action(state, target);
         return;
     }
     else if (state.action == ACTION_TURN_LEFT || state.action == ACTION_TURN_RIGHT) {
         // do_turn_pulse(state, last_turn_pulse);
         turn_action(state, state.action);
+        return;
+    } else if (state.action == ACTION_SWITCH_TO_PULLEY_MODE || state.action == ACTION_SWITCH_TO_SHELL_MODE) {
+        switch_mode_action(state.action);
         return;
     }
     return;
@@ -331,7 +341,7 @@ void stop_turn_action(bool final_turn) {
 
     steering_servo_set_position(MID);
     
-
+    
     set_current_action(action_before_turning);
 
     // set_current_speed(0.0f);
@@ -361,6 +371,23 @@ void turn_action(State state, int action) {
     return;
 }
 
+void switch_mode_action(int action){
+    /**
+     * Switch to driving mode
+     * 
+     * @return void
+    */
+
+   if(action == ACTION_SWITCH_TO_PULLEY_MODE){
+        // switch to pulley mode
+        mode_switch_servo_set_position(PULLEY_MODE);
+    } else if(action == ACTION_SWITCH_TO_SHELL_MODE){
+        // switch to shell mode
+        mode_switch_servo_set_position(SHELL_MODE);
+    }
+    return;
+
+}
 void reset_stop_counter() {
     /**
      * Reset the stop counter

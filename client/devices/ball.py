@@ -93,6 +93,10 @@ class Ball:
             mqtt_connector.publish(self.topic, f"TL {float(data['max_speed'])}")
         elif objective_type == ObjectiveType.TURN_RIGHT:
             mqtt_connector.publish(self.topic, f"TR {float(data['max_speed'])}")
+        elif objective_type == ObjectiveType.SWITCH_TO_SHELL_MODE:
+            mqtt_connector.publish(self.topic, "SM")
+        elif objective_type == ObjectiveType.SWITCH_TO_PULLEY_MODE:
+            mqtt_connector.publish(self.topic, "PM")
         elif objective_type == ObjectiveType.STOP:
             mqtt_connector.publish(self.topic, "ST")
         elif objective_type == ObjectiveType.MOVETO:

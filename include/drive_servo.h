@@ -8,8 +8,17 @@
 
 extern servo_handle_t drive_servo;
 
-// Define motor pins
-#define SERVO_GPIO GPIO_NUM_15 //?
+
+// Define uart pins
+//DEVKIT V1
+// #define UART_NUM UART_NUM_2
+// #define TX_GPIO_PIN GPIO_NUM_17
+// #define RX_GPIO_PIN GPIO_NUM_16
+
+//S3
+#define UART_NUM UART_NUM_0
+#define TX_GPIO_PIN GPIO_NUM_43
+#define RX_GPIO_PIN GPIO_NUM_44
 
 
 
