@@ -13,10 +13,11 @@ class ObjectiveType(Enum):
     STOP = 4
     TURN_LEFT = 5
     TURN_RIGHT = 6
-    SWITCH_TO_SHELL_MODE = 7
-    SWITCH_TO_PULLEY_MODE = 8
-    INIT = 9
-    REBOOT = 10
+    GO_STRAIGHT = 7
+    SWITCH_TO_SHELL_MODE = 8
+    SWITCH_TO_PULLEY_MODE = 9
+    INIT = 10
+    REBOOT = 11
     UNDEFINED = -1
 
 

@@ -117,6 +117,7 @@ static servo_result_t read_write_blocking(
         return SERVO_HAL_ERR;
     }
     int bytes_read_ignore = uart_read_bytes(s->uart, rx, tx_size, SERVO_UART_TIMEOUT_ms); //To ignore bytes sent by own TX
+    ESP_LOGI(SERVO_TAG, "Ignoring %d bytes", bytes_read_ignore);
 
 
     int bytes_read = uart_read_bytes(s->uart, rx, rx_size, SERVO_UART_TIMEOUT_ms);
@@ -126,6 +127,7 @@ static servo_result_t read_write_blocking(
         return SERVO_HAL_ERR;
     }
 
+    ESP_LOGI(SERVO_TAG, "Read %d bytes from UART, expected %d", bytes_read, rx_size);
     if (bytes_read != rx_size)
     {
         ESP_LOGE(SERVO_TAG, "Missing data from UART");

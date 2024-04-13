@@ -103,7 +103,7 @@ void init_servo(servo_t* servo, int gpio, int min_angle, int mid_angle, int max_
 
 // Rotate the servo to the specified angle at a specified delay
 void rotate_servo(servo_t* servo, int angle, int delay_ms){
-    ESP_LOGI(TAG, "Angle of rotation: %d", angle);
+    // ESP_LOGI(TAG, "Angle of rotation: %d", angle);
     if(delay_ms > 0) {
         while(servo->current_angle != angle) {
             if(servo->current_angle < angle) {

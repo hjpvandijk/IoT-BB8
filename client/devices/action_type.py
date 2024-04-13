@@ -12,6 +12,9 @@ class ActionType(Enum):
     STOP = 3
     TURN_LEFT = 4
     TURN_RIGHT = 5
+    GO_STRAIGHT = 6
+    SWITCH_TO_SHELL_MODE = 7
+    SWITCH_TO_PULLEY_MODE = 8
     UNDEFINED = -1
 
 

@@ -191,10 +191,13 @@ class ControlPanel:
         find_available_button.grid(row=self.grid_row_offset + 5, column=0, padx=(0, 150))
 
         turn_left_button = tk.Button(self.root, text="Turn Left", command=self.turn_left)
-        turn_left_button.grid(row=self.grid_row_offset + 5, column=0, padx=(100, 0))
+        turn_left_button.grid(row=self.grid_row_offset + 5, column=0, padx=(50, 0))
 
         turn_right_button = tk.Button(self.root, text="Turn Right", command=self.turn_right)
-        turn_right_button.grid(row=self.grid_row_offset + 5, column=0, padx=(325, 0))
+        turn_right_button.grid(row=self.grid_row_offset + 5, column=0, padx=(350, 0))
+
+        go_straight_button = tk.Button(self.root, text="Go Straight", command=self.go_straight)
+        go_straight_button.grid(row=self.grid_row_offset + 5, column=0, padx=(200, 0))
 
         self.keyboard_button = tk.Button(self.root, text="Enable Keyboard Mode", command=self.toggle_keyboard)
         self.keyboard_button.grid(row=self.grid_row_offset + 6, column=0, padx=(0, 300))
@@ -411,7 +414,7 @@ class ControlPanel:
         :param event: The key press event
         :return: None
         """
-        if self.keyboard_mode and not self.active_key:
+        if self.keyboard_mode: #and not self.active_key:
             if event.keysym == 'Up':
                 self.active_key = event.keysym
                 self.move_forward()
@@ -438,8 +441,12 @@ class ControlPanel:
         :return: None
         """
         if self.keyboard_mode and event.keysym == self.active_key:
+            if (self.active_key == 'Up' or self.active_key == 'Down'):
+                self.stop_movement()
+            if (self.active_key == 'Left' or self.active_key == 'Right'):
+                self.go_straight()
             self.active_key = None
-            self.stop_movement()
+
 
     def on_ball_select(self, event):
         """
@@ -690,6 +697,14 @@ class ControlPanel:
         :return: None
         """
         self.single_movement_objective(ObjectiveType.TURN_RIGHT)
+
+    def go_straight(self):
+        """
+        Sets the selected ball to go straight. If the ball has a target location, a warning will be logged.
+        If no ball is selected, a warning will be logged.
+        :return: None
+        """
+        self.single_movement_objective(ObjectiveType.GO_STRAIGHT)
 
     def move_forward(self):
         """

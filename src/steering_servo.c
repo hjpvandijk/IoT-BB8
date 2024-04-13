@@ -12,7 +12,7 @@ int steering_target_position = MID;
 
 void steering_servo_init(void){
     steering_servo = servo_create();
-    init_servo(steering_servo, STEERING_SERVO_PIN, FULL_LEFT, HORIZONTAL_POSITION, FULL_RIGHT, DELAY_MS);
+    init_servo(steering_servo, STEERING_SERVO_PIN, FULL_LEFT_S, HORIZONTAL_POSITION_S, FULL_RIGHT_S, DELAY_MS);
 
     
 }

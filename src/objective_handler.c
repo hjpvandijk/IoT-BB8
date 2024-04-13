@@ -55,6 +55,16 @@ void process_objective_message(char* event_data) {
             set_current_objective(OBJECTIVE_TURN_RIGHT);
             set_target_speed(bounded_max_speed);
         }
+    } else if (strncmp(event_data, "GS", 2) == 0) {
+        float max_speed;
+
+        if (sscanf(event_data, "GS %f", &max_speed) == 1) {
+            float bounded_max_speed = bound_max_speed(max_speed);
+            set_previous_objective(get_current_objective());
+            set_current_objective(OBJECTIVE_GO_STRAIGHT);
+            set_target_speed(bounded_max_speed);
+        }
+
    } else if (strncmp(event_data, "SM", 2) == 0) {
         ESP_LOGI("OBJECTIVE_HANDLER", "SM");
         set_previous_objective(get_current_objective());

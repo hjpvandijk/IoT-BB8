@@ -18,13 +18,13 @@ int process_objective_switch(int previous_objective, int current_objective) {
      * @return 1 if the objective has changed, 0 otherwise
     */
     if (previous_objective != current_objective) {
-        if ((previous_objective == OBJECTIVE_FORWARD &&get_current_action() == ACTION_BACKWARD) || (previous_objective == OBJECTIVE_BACKWARD && get_current_action() == ACTION_FORWARD)) {
-                set_current_action(ACTION_STOP);
-                return 1;
-        } else if (previous_objective == OBJECTIVE_TURN_LEFT || previous_objective == OBJECTIVE_TURN_RIGHT) {
+        // if ((previous_objective == OBJECTIVE_FORWARD &&get_current_action() == ACTION_BACKWARD) || (previous_objective == OBJECTIVE_BACKWARD && get_current_action() == ACTION_FORWARD)) {
+        //         set_current_action(ACTION_STOP);
+        //         return 1;
+        // } else 
+        if (current_objective == OBJECTIVE_TURN_LEFT || current_objective == OBJECTIVE_TURN_RIGHT || current_objective == OBJECTIVE_GO_STRAIGHT) {
             action_before_turning = previous_objective;
-            stop_turn_action(true);
-            return 1;
+            return 0;
         } else if (previous_objective == OBJECTIVE_MOVETO) {
             if (get_current_action() == ACTION_FORWARD) {
                 set_current_action(ACTION_STOP);
@@ -50,9 +50,9 @@ void process_objective(State state, Target target) {
      * @return void
     */
     // ESP_LOGI("ACTION_HANDLER", "PROCESSING OBJECTIVE");
-    // if (process_objective_switch(state.previous_objective, state.objective)) {
-    //     return;
-    // }
+    if (process_objective_switch(state.previous_objective, state.objective)) {
+        return;
+    }
 
 
     if (state.objective == OBJECTIVE_NONE) {
@@ -103,6 +103,30 @@ void process_objective(State state, Target target) {
         // }
         return;
     }  
+
+    if (state.objective == OBJECTIVE_GO_STRAIGHT) {
+        // if (state.action == ACTION_NONE) {
+            set_current_action(ACTION_GO_STRAIGHT);
+            return;
+        // }
+        return;
+    }
+
+    if (state.objective == OBJECTIVE_SWITCH_TO_SHELL_MODE) {
+        // if (state.action == ACTION_NONE) {
+            set_current_action(ACTION_SWITCH_TO_SHELL_MODE);
+            return;
+        // }
+        return;
+    }
+
+    if (state.objective == OBJECTIVE_SWITCH_TO_PULLEY_MODE) {
+        // if (state.action == ACTION_NONE) {
+            set_current_action(ACTION_SWITCH_TO_PULLEY_MODE);
+            return;
+        // }
+        return;
+    }
 
     if (state.objective == OBJECTIVE_REBOOT) {
         //set_current_objective(OBJECTIVE_INIT); Might not be needed
@@ -231,11 +255,12 @@ void process_action(State state, Target target, TickType_t* last_turn_pulse) {
         backward_action(state, target);
         return;
     }
-    else if (state.action == ACTION_TURN_LEFT || state.action == ACTION_TURN_RIGHT) {
+    else if (state.action == ACTION_TURN_LEFT || state.action == ACTION_TURN_RIGHT || state.action == ACTION_GO_STRAIGHT) {
         // do_turn_pulse(state, last_turn_pulse);
         turn_action(state, state.action);
         return;
-    } else if (state.action == ACTION_SWITCH_TO_PULLEY_MODE || state.action == ACTION_SWITCH_TO_SHELL_MODE) {
+    } 
+    else if (state.action == ACTION_SWITCH_TO_PULLEY_MODE || state.action == ACTION_SWITCH_TO_SHELL_MODE) {
         switch_mode_action(state.action);
         return;
     }
@@ -365,7 +390,12 @@ void turn_action(State state, int action) {
     } else if (action == ACTION_TURN_LEFT) {
         //steering servo right
         steering_servo_set_position(RIGHT);
+    } else if (action == ACTION_GO_STRAIGHT) {
+        //steering servo mid
+        steering_servo_set_position(MID);
     }
+
+    set_current_action(action_before_turning);
 
 
     return;

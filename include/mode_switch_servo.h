@@ -13,16 +13,16 @@
 
 
 
-#define HORIZONTAL_POSITION 0
-#define FULL_RIGHT 50
-#define FULL_LEFT -50
+#define HORIZONTAL_POSITION_MS 0
+#define FULL_RIGHT_MS 50
+#define FULL_LEFT_MS -50
 
 #define DELAY_MS 0
 
 
 typedef enum {
-    SHELL_MODE = FULL_LEFT,
-    PULLEY_MODE = FULL_RIGHT,
+    SHELL_MODE = FULL_LEFT_MS,
+    PULLEY_MODE = FULL_RIGHT_MS,
 } ModeSwitchPosition;
 
 extern int mode_switch_target_position;

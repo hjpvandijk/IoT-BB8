@@ -61,7 +61,7 @@ void backward_action(State state, Target target);
 // void do_turn_pulse(State state, TickType_t* last_turn_pulse);
 void stop_turn_action(bool final_turn);
 void turn_action(State state, int action);
-void switch_to_action(int action);
+void switch_mode_action(int action);
 int get_stop_counter();
 void increment_stop_counter();
 void reset_stop_counter();
