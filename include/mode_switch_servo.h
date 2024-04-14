@@ -17,7 +17,7 @@
 #define FULL_RIGHT_MS 50
 #define FULL_LEFT_MS -50
 
-#define DELAY_MS 0
+#define DELAY_MS 50
 
 
 typedef enum {

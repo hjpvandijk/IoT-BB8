@@ -261,7 +261,7 @@ void process_action(State state, Target target, TickType_t* last_turn_pulse) {
         return;
     } 
     else if (state.action == ACTION_SWITCH_TO_PULLEY_MODE || state.action == ACTION_SWITCH_TO_SHELL_MODE) {
-        switch_mode_action(state.action);
+        switch_mode_action(state.action, target);
         return;
     }
     return;
@@ -401,12 +401,14 @@ void turn_action(State state, int action) {
     return;
 }
 
-void switch_mode_action(int action){
+void switch_mode_action(int action, Target target){
     /**
      * Switch to driving mode
      * 
      * @return void
     */
+    drive_servo_forward(target.speed);
+    set_current_speed(target.speed);
 
    if(action == ACTION_SWITCH_TO_PULLEY_MODE){
         // switch to pulley mode
@@ -415,6 +417,8 @@ void switch_mode_action(int action){
         // switch to shell mode
         mode_switch_servo_set_position(SHELL_MODE);
     }
+
+    set_current_action(ACTION_STOP);
     return;
 
 }
