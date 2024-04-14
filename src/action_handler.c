@@ -6,7 +6,8 @@
 volatile int stop_counter = 0;
 volatile int brake_pulse_counter = 0;
 
-int action_before_turning = ACTION_NONE;
+int objective_before_turning = OBJECTIVE_NONE;
+
 
 int process_objective_switch(int previous_objective, int current_objective) {
     /**
@@ -23,7 +24,7 @@ int process_objective_switch(int previous_objective, int current_objective) {
         //         return 1;
         // } else 
         if (current_objective == OBJECTIVE_TURN_LEFT || current_objective == OBJECTIVE_TURN_RIGHT || current_objective == OBJECTIVE_GO_STRAIGHT) {
-            action_before_turning = previous_objective;
+            objective_before_turning = previous_objective;
             return 0;
         } else if (previous_objective == OBJECTIVE_MOVETO) {
             if (get_current_action() == ACTION_FORWARD) {
@@ -82,7 +83,8 @@ void process_objective(State state, Target target) {
         ESP_LOGI("ACTION_HANDLER", "RECEIVED STOP, %d", state.action);
         // if (state.action == ACTION_NONE) {
             set_previous_objective(get_current_objective());
-            set_current_objective(OBJECTIVE_NONE);
+            // set_current_objective(OBJECTIVE_STOP);
+            set_current_action(ACTION_STOP);
             return;
         // }
         return;
@@ -367,7 +369,7 @@ void stop_turn_action(bool final_turn) {
     steering_servo_set_position(MID);
     
     
-    set_current_action(action_before_turning);
+    set_current_objective(objective_before_turning);
 
     // set_current_speed(0.0f);
     return;
@@ -395,7 +397,7 @@ void turn_action(State state, int action) {
         steering_servo_set_position(MID);
     }
 
-    set_current_action(action_before_turning);
+    set_current_objective(objective_before_turning);
 
 
     return;
@@ -418,7 +420,7 @@ void switch_mode_action(int action, Target target){
         mode_switch_servo_set_position(SHELL_MODE);
     }
 
-    set_current_action(ACTION_STOP);
+    set_current_objective(OBJECTIVE_STOP);
     return;
 
 }

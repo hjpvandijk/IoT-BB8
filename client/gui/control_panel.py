@@ -23,6 +23,7 @@ BALL_COLOR = "yellow"
 BASE_COLOR = "white"
 
 
+
 def clean_up():
     """
     Clean up function that is called when the program exits.
@@ -84,7 +85,8 @@ class ControlPanel:
 
         # Keyboard bindings
         self.keyboard_mode = False
-        self.active_key = None
+        # self.active_key = None
+        self.pressed_keys = set()
         self.root.bind("<KeyPress>", self.on_key_press)
         self.root.bind("<KeyRelease>", self.on_key_release)
 
@@ -415,23 +417,24 @@ class ControlPanel:
         :return: None
         """
         if self.keyboard_mode: #and not self.active_key:
+            self.pressed_keys.add(event.keysym)
             if event.keysym == 'Up':
-                self.active_key = event.keysym
+                # self.active_key = event.keysym
                 self.move_forward()
             elif event.keysym == 'Down':
-                self.active_key = event.keysym
+                # self.active_key = event.keysym
                 self.move_backward()
             elif event.keysym == 'Left':
-                self.active_key = event.keysym
+                # self.active_key = event.keysym
                 self.turn_left()
             elif event.keysym == 'Right':
-                self.active_key = event.keysym
+                # self.active_key = event.keysym
                 self.turn_right()
             elif event.keysym == 'p':
-                self.active_key = event.keysym
+                # self.active_key = event.keysym
                 self.switch_to_pulley_mode()
             elif event.keysym == 's':
-                self.active_key = event.keysym
+                # self.active_key = event.keysym
                 self.switch_to_shell_mode()
 
     def on_key_release(self, event):
@@ -440,12 +443,13 @@ class ControlPanel:
         :param event: The key release event
         :return: None
         """
-        if self.keyboard_mode and event.keysym == self.active_key:
-            if (self.active_key == 'Up' or self.active_key == 'Down'):
+        if self.keyboard_mode:# and event.keysym == self.active_key:
+            if (event.keysym == 'Up' or event.keysym == 'Down'):
                 self.stop_movement()
-            if (self.active_key == 'Left' or self.active_key == 'Right'):
+            if (event.keysym == 'Left' or event.keysym == 'Right'):
                 self.go_straight()
-            self.active_key = None
+            self.pressed_keys.remove(event.keysym)
+            # self.active_key = None
 
 
     def on_ball_select(self, event):
