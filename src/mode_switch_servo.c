@@ -25,6 +25,10 @@ void mode_switch_servo_set_position(ModeSwitchPosition position){
         ESP_LOGI(MODE_SWITCH_SERVO_TAG, "Setting position to PULLEY_MODE");
         rotate_servo_to_max(mode_switch_servo);
         break;
+    case IN_BETWEEN_MODES:
+        ESP_LOGI(MODE_SWITCH_SERVO_TAG, "Setting position to IN_BETWEEN_MODES");
+        rotate_servo_to_mid(mode_switch_servo);
+        break;
     default:
         break;
     }

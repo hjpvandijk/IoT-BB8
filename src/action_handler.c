@@ -62,7 +62,7 @@ void process_objective(State state, Target target) {
     }
 
     if (state.objective == OBJECTIVE_FORWARD) {
-        ESP_LOGI("ACTION_HANDLER", "RECEIVED FORWARDS, %d", state.action);
+        // ESP_LOGI("ACTION_HANDLER", "RECEIVED FORWARDS, %d", state.action);
         // if (state.action == ACTION_NONE) {
             set_current_action(ACTION_FORWARD);
             return;
@@ -71,7 +71,7 @@ void process_objective(State state, Target target) {
     }  
 
     if (state.objective == OBJECTIVE_BACKWARD) {
-        ESP_LOGI("ACTION_HANDLER", "RECEIVED BACKWARDS, %d", state.action);
+        // ESP_LOGI("ACTION_HANDLER", "RECEIVED BACKWARDS, %d", state.action);
         // if (state.action == ACTION_NONE) {
             set_current_action(ACTION_BACKWARD);
             return;
@@ -80,7 +80,7 @@ void process_objective(State state, Target target) {
     }
 
     if (state.objective == OBJECTIVE_STOP) {
-        ESP_LOGI("ACTION_HANDLER", "RECEIVED STOP, %d", state.action);
+        // ESP_LOGI("ACTION_HANDLER", "RECEIVED STOP, %d", state.action);
         // if (state.action == ACTION_NONE) {
             set_previous_objective(get_current_objective());
             // set_current_objective(OBJECTIVE_STOP);
@@ -368,8 +368,10 @@ void stop_turn_action(bool final_turn) {
 
     steering_servo_set_position(MID);
     
-    
-    set_current_objective(objective_before_turning);
+    if(objective_before_turning != OBJECTIVE_TURN_LEFT && objective_before_turning != OBJECTIVE_TURN_RIGHT && objective_before_turning != OBJECTIVE_GO_STRAIGHT) {
+        set_current_objective(objective_before_turning);
+        return;
+    }
 
     // set_current_speed(0.0f);
     return;
@@ -397,8 +399,10 @@ void turn_action(State state, int action) {
         steering_servo_set_position(MID);
     }
 
-    set_current_objective(objective_before_turning);
-
+    if(objective_before_turning != OBJECTIVE_TURN_LEFT && objective_before_turning != OBJECTIVE_TURN_RIGHT && objective_before_turning != OBJECTIVE_GO_STRAIGHT) {
+        set_current_objective(objective_before_turning);
+        return;
+    }
 
     return;
 }
@@ -409,9 +413,14 @@ void switch_mode_action(int action, Target target){
      * 
      * @return void
     */
+    ESP_LOGI("ACTION_HANDLER", "ST servo backwards");
+    drive_servo_backward(target.speed);
+    set_current_speed(target.speed);
+    mode_switch_servo_set_position(IN_BETWEEN_MODES);
+    ESP_LOGI("ACTION_HANDLER", "ST servo forwards");
     drive_servo_forward(target.speed);
     set_current_speed(target.speed);
-
+    vTaskDelay(500 / portTICK_PERIOD_MS);
    if(action == ACTION_SWITCH_TO_PULLEY_MODE){
         // switch to pulley mode
         mode_switch_servo_set_position(PULLEY_MODE);
@@ -419,6 +428,8 @@ void switch_mode_action(int action, Target target){
         // switch to shell mode
         mode_switch_servo_set_position(SHELL_MODE);
     }
+
+    vTaskDelay(1000 / portTICK_PERIOD_MS);
 
     set_current_objective(OBJECTIVE_STOP);
     return;

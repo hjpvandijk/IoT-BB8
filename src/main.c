@@ -127,7 +127,7 @@ void app_main() {
 
     configure_led();
 
-    // vTaskDelay(3000 / portTICK_PERIOD_MS);
+    vTaskDelay(3000 / portTICK_PERIOD_MS);
 
     ESP_LOGE("MAIN", "Starting up...");
 

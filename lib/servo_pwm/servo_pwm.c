@@ -95,8 +95,8 @@ void init_servo(servo_t* servo, int gpio, int min_angle, int mid_angle, int max_
     ESP_ERROR_CHECK(mcpwm_timer_enable(servo->timer));
     ESP_ERROR_CHECK(mcpwm_timer_start_stop(servo->timer, MCPWM_TIMER_START_NO_STOP));
 
-    ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(servo->comparator, example_angle_to_compare(0))); //Set servo to middle
-    servo->current_angle = 0;
+    ESP_ERROR_CHECK(mcpwm_comparator_set_compare_value(servo->comparator, example_angle_to_compare(servo->mid_angle))); //Set servo to middle
+    servo->current_angle = servo->mid_angle;
 
 
 }

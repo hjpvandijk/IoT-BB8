@@ -114,7 +114,7 @@ void task1(void *pvParameters) {
 
 void task2(void *pvParameters) {
     // Initialize servo
-    int servores = servo_init(&drive_servo, 10, 10);
+    int servores = servo_init(&drive_servo, 0, 0);
     ESP_LOGI("DRIVE_SERVO", "servo_init: %d", servores); 
     // Your additional code for task 2
 
@@ -159,7 +159,7 @@ void drive_servo_configure(void) {
     // //Set UART pins (using UART0 default pins ie no changes.)
     ESP_ERROR_CHECK(uart_set_pin(UART_NUM, TX_GPIO_PIN, RX_GPIO_PIN, UART_PIN_NO_CHANGE, UART_PIN_NO_CHANGE));
 
-    int servores = servo_init(&drive_servo, 10, 10);
+    int servores = servo_init(&drive_servo, 0, 0);
     ESP_LOGI("DRIVE_SERVO", "servo_init: %d", servores); 
     // Create task 2 and pin it to core 1
     // xTaskCreatePinnedToCore(
