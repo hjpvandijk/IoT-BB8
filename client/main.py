@@ -13,6 +13,7 @@ logging.basicConfig(encoding='utf-8',
 # MQTT config
 # MQTT_BROKER = "192.168.56.1" #Own IP address
 MQTT_BROKER = "broker.hivemq.com" #Public broker
+# MQTT_BROKER = "test.mosquitto.org" #Public broker
 MQTT_PORT = 1883
 MQTT_KEEPALIVE = 60
 

@@ -38,6 +38,8 @@
 
 #define DEBUG 0
 
+bool WIFI_CONNECTED = false;
+
 #define LED_PIN GPIO_NUM_21 // ONBOARD LED PIN FOR ESP32-S3
 //#define LED_PIN GPIO_NUM_2 // ONBOARD LED PIN FOR ESP32
 
@@ -51,6 +53,8 @@ const char* password =  "perenpatser";
 // MQTT
 // const char* broker_uri = "mqtt://192.168.56.1";
 const char* broker_uri = "mqtt://broker.hivemq.com";
+// const char* broker_uri = "mqtt://test.mosquitto.org";
+
 esp_mqtt_client_handle_t mqtt_client;
 
 // Flags
@@ -104,6 +108,7 @@ void test_connection_task(void *args) {
             if (!gpio_get_level(LED_PIN)) {
                 gpio_set_level(LED_PIN, 1);
             }
+            WIFI_CONNECTED = true;
         // WiFi not connected, turn off the LED
         } else {
             gpio_set_level(LED_PIN, 0);
@@ -139,12 +144,17 @@ void app_main() {
     connection_event_group = xEventGroupCreate();
 
     init_wifi(&connection_event_group, ssid, password);
-    init_mqtt(&connection_event_group, &mqtt_client, broker_uri);
 
     // xTaskCreate(imu_task, "imu_task", 4096, &imu_data, 10, NULL);
-    xTaskCreate(report_state_task, "state_task", 4096, &mqtt_client, 10, NULL);
     xTaskCreate(test_connection_task, "test_connection_task", 4096, NULL, 10, NULL);
     // xTaskCreate(steering_servo_task, "steering_servo_task", 4096, NULL, 10, NULL);
+
+        while(!WIFI_CONNECTED){
+        vTaskDelay(1000 / portTICK_PERIOD_MS);
+    }
+    init_mqtt(&connection_event_group, &mqtt_client, broker_uri);
+    
+    xTaskCreate(report_state_task, "state_task", 4096, &mqtt_client, 10, NULL);
 
 
     // TickType_t last_wakeup_time = xTaskGetTickCount(); 

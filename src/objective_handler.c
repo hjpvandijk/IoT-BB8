@@ -91,6 +91,7 @@ void process_objective_message(char* event_data) {
             set_target_speed(bounded_max_speed);
         }
     } else if (strncmp(event_data, "IN", 2) == 0) {
+        ESP_LOGI("OBJECTIVE_HANDLER", "IN");
         float x, y;
         if (sscanf(event_data, "IN %f %f", &x, &y) == 2) {
             set_current_coordinates(x, y);

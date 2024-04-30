@@ -145,16 +145,16 @@ void process_objective(State state, Target target) {
         // Get the distance to the target
         float distance_to_target = sqrt(pow(target.x - state.x, 2) + pow(target.y - state.y, 2));
 
-        // If we are close enough to the target, stop
-        if (distance_to_target < TARGET_OFFSET) {
-            if (state.action == ACTION_NONE) {
-                set_previous_objective(get_current_objective());
-                set_current_objective(OBJECTIVE_NONE);
-            } else {
-                set_current_action(ACTION_STOP);
-            }
-            return;
-        }
+        // // If we are close enough to the target, stop
+        // if (distance_to_target < TARGET_OFFSET) {
+        //     if (state.action == ACTION_NONE) {
+        //         set_previous_objective(get_current_objective());
+        //         set_current_objective(OBJECTIVE_NONE);
+        //     } else {
+        //         set_current_action(ACTION_STOP);
+        //     }
+        //     return;
+        // }
 
         // Get the angle to the target
         float angle_to_target = atan2(target.y - state.y, target.x - state.x) * (180.0 / M_PI);
@@ -238,6 +238,11 @@ void process_action(State state, Target target, TickType_t* last_turn_pulse) {
      * 
      * @return void
     */
+
+   if(get_previous_action() == state.action) {
+       return;
+   }
+   set_previous_action(state.action);
 
     if (state.action == ACTION_NONE) {
         return;
@@ -388,10 +393,10 @@ void turn_action(State state, int action) {
     */
 
 
-   if (action == ACTION_TURN_RIGHT) {
+   if (action == ACTION_TURN_LEFT) {
         // steering servo left
         steering_servo_set_position(LEFT);
-    } else if (action == ACTION_TURN_LEFT) {
+    } else if (action == ACTION_TURN_RIGHT) {
         //steering servo right
         steering_servo_set_position(RIGHT);
     } else if (action == ACTION_GO_STRAIGHT) {
@@ -417,10 +422,11 @@ void switch_mode_action(int action, Target target){
     drive_servo_backward(target.speed);
     set_current_speed(target.speed);
     mode_switch_servo_set_position(IN_BETWEEN_MODES);
-    ESP_LOGI("ACTION_HANDLER", "ST servo forwards");
+    ESP_LOGI("ACTION_HANDLER", "ST servo forwards"); 
+    vTaskDelay(3000 / portTICK_PERIOD_MS); //Give time to detach from first gear
     drive_servo_forward(target.speed);
     set_current_speed(target.speed);
-    vTaskDelay(500 / portTICK_PERIOD_MS);
+    vTaskDelay(500 / portTICK_PERIOD_MS); //Give time to change direction
    if(action == ACTION_SWITCH_TO_PULLEY_MODE){
         // switch to pulley mode
         mode_switch_servo_set_position(PULLEY_MODE);

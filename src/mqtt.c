@@ -47,6 +47,7 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
                 snprintf(BALL_NAME, sizeof(BALL_NAME), "ball%d", random_id);
             }
   
+            ESP_LOGI(MQTT_TAG, "Registering ball line 50 %s", BALL_NAME);
             // Register ball to base station
             esp_mqtt_client_publish(client, "register", BALL_ID, 0, 0, 0);
 
@@ -75,8 +76,10 @@ static void mqtt_event_handler(void *handler_args, esp_event_base_t base, int32_
             ESP_LOGI(MQTT_TAG, "MQTT data received");
 
             if (strncmp(event->topic, OBJECTIVE_TOPIC, strlen(MQTT_TAG)) == 0) {
+                ESP_LOGI(MQTT_TAG, "Objective message received");
                 process_objective_message(event->data);
             } else if (strncmp(event->topic, ID_TOPIC, 2) == 0) {
+                ESP_LOGI(MQTT_TAG, "ID message received");
                 identify_ball(client, event->data);
             }
             break;
@@ -104,6 +107,7 @@ void identify_ball(esp_mqtt_client_handle_t client, char* event_data) {
             char message[max_length + 1]; 
             snprintf(message, max_length + 1, "%s %f %f %f %d", BALL_ID, get_current_x_pos(), get_current_y_pos(), get_current_rotation(), get_current_objective());
 
+            ESP_LOGI(MQTT_TAG, "Identifying ball to client line 110 %d", client_id);
             esp_mqtt_client_publish(client, "register", message, 0, 0, 0);
         }
     }
@@ -136,7 +140,8 @@ void init_mqtt(EventGroupHandle_t *connection_event_group, esp_mqtt_client_handl
 
     *client = esp_mqtt_client_init(&mqtt_cfg);
     esp_mqtt_client_register_event(*client, ESP_EVENT_ANY_ID, mqtt_event_handler, &mqtt_data);
-    esp_mqtt_client_start(*client);
+    int res = esp_mqtt_client_start(*client);
+    ESP_LOGI(MQTT_TAG, "MQTT client started %d", res);
 }
 
 void mqtt_publish_message(esp_mqtt_client_handle_t client, const char *message) {
@@ -148,5 +153,6 @@ void mqtt_publish_message(esp_mqtt_client_handle_t client, const char *message) 
      * 
      * @return void
     */
+    // ESP_LOGI(MQTT_TAG, "Publishing message line 155: %s", message);
     esp_mqtt_client_publish(client, STATE_TOPIC, message, 0, 0, 0);
 }

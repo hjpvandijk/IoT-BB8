@@ -1,6 +1,7 @@
 #include "state_machine.h"
+#include "esp_log.h"
 
-volatile State current_state = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ACTION_NONE, OBJECTIVE_INIT, OBJECTIVE_NONE};
+volatile State current_state = {0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, ACTION_NONE, ACTION_NONE, OBJECTIVE_INIT, OBJECTIVE_NONE};
 volatile Target target = {0.0, 0.0, 0.0};
 
 void set_current_coordinates(float x, float y) {
@@ -72,6 +73,17 @@ void set_current_action(int action) {
     current_state.action = action;
 }
 
+void set_previous_action(int action) {
+    /**
+     * Set the current action
+     * 
+     * @param action The current action
+     * 
+     * @return void
+    */
+    current_state.previous_action = action;
+}
+
 void set_current_objective(int objective) {
     /**
      * Set the current objective
@@ -80,6 +92,7 @@ void set_current_objective(int objective) {
      * 
      * @return void
     */
+    ESP_LOGI("STATE", "Setting objective %d", objective);
     current_state.objective = objective;
 }
 
@@ -211,6 +224,15 @@ int get_current_action() {
      * @return The current action
     */
     return current_state.action;
+}
+
+int get_previous_action() {
+    /**
+     * Get the current action
+     * 
+     * @return The current action
+    */
+    return current_state.previous_action;
 }
 
 int get_current_objective() {
