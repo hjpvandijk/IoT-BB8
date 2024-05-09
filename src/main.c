@@ -112,6 +112,7 @@ void test_connection_task(void *args) {
         // WiFi not connected, turn off the LED
         } else {
             gpio_set_level(LED_PIN, 0);
+            WIFI_CONNECTED = false;
 
             // Stop the motors when WiFi is disconnected
             //set_current_objective(OBJECTIVE_STOP);
@@ -185,6 +186,9 @@ void app_main() {
         // Get current state and target
         // State current_state = get_current_state();
         // Target target = get_target();
+        if(!WIFI_CONNECTED){ // If no connection, stop the ball
+            set_current_objective(OBJECTIVE_STOP);
+        }
 
         // Process the objective to determine the next action
         process_objective(get_current_state(), get_target());
